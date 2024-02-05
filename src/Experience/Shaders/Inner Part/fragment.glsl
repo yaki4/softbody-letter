@@ -1,0 +1,4 @@
+#define GLSLIFY 1
+void main () {
+    gl_FragColor = vec4(vec3(0.5, 1. ,1.), 1.);
+}
