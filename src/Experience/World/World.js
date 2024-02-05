@@ -1,6 +1,7 @@
 import Experience from '../Experience.js'
 import Environment from './Environment.js'
 import Letter from './Letter.js'
+import Dust from './Dust.js'
 
 export default class World
 {
@@ -21,7 +22,8 @@ export default class World
             this.experience.time.elapsed = 0
 
             // Setup
-            this.letter = new Letter()
+            //this.letter = new Letter()
+            this.dust = new Dust()
             this.environment = new Environment()
             // Remove preloader
             this.html.preloader.classList.add("preloaded");
@@ -47,6 +49,6 @@ export default class World
 
     update()
     {
-
+        this.dust && this.dust.update()
     }
 }
