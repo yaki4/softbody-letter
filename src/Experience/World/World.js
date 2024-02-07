@@ -2,6 +2,7 @@ import Experience from '../Experience.js'
 import Environment from './Environment.js'
 import Letter from './Letter.js'
 import Dust from './Dust.js'
+import Terrain from './Terrain.js'
 
 export default class World
 {
@@ -24,6 +25,7 @@ export default class World
             // Setup
             //this.letter = new Letter()
             this.dust = new Dust()
+            this.terrain = new Terrain()
             this.environment = new Environment()
             // Remove preloader
             this.html.preloader.classList.add("preloaded");
@@ -50,5 +52,6 @@ export default class World
     update()
     {
         this.dust && this.dust.update()
+        this.terrain && this.terrain.update()
     }
 }

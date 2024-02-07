@@ -18,6 +18,11 @@ export default [
     {
         name: 'bufferTerrain',
         type: 'bufferGeometry',
-        path: 'geometry/PARTICLE_LD.buf'
+        path: 'geometry/TERRAIN.buf'
+    },
+    {
+        name: 'bakeTerrain',
+        type: 'texture',
+        path: 'textures/terrain/bake.webp'
     }
 ]

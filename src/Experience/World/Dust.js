@@ -11,7 +11,6 @@ export default class Dust {
     mesh;
     material;
     scrollState;
-    container = new THREE.Object3D;
 
     constructor() {
         this.experience = new Experience()
@@ -74,7 +73,6 @@ export default class Dust {
         this.mesh = new THREE.Mesh(InstancedGeometry, this.material)
         this.mesh.frustumCulled = false
         this.mesh.renderOrder = -1
-        this.container.add(this.mesh)
 
         this.scene.add(this.mesh)
     }
