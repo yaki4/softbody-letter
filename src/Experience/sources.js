@@ -24,5 +24,10 @@ export default [
         name: 'bakeTerrain',
         type: 'texture',
         path: 'textures/terrain/bake.webp'
+    },
+    {
+        name: 'LDRTexture',
+        type: 'texture',
+        path: 'textures/LDR_RGB1_0.png'
     }
 ]

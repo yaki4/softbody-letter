@@ -16,6 +16,8 @@ export default class Terrain {
         this.renderer = this.experience.renderer.instance
         this.resources = this.experience.resources
         this.sizes = this.experience.sizes
+        this.lightField = this.experience.world.lightField
+        this.blueNoise = this.experience.world.blueNoise
 
         this.timeline = this.experience.timeline;
 
@@ -34,25 +36,14 @@ export default class Terrain {
                 u_time: new THREE.Uniform(0),
                 u_resolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width, this.sizes.height)),
             },
-            // lightField.sharedUniforms,
-            // blueNoise.sharedUniforms),
-                {}),
+            this.lightField.sharedUniforms,
+            this.blueNoise.sharedUniforms),
             vertexShader: vert,
             fragmentShader: frag
         });
         this.mesh = new THREE.Mesh(this.geometry, this.material)
 
         this.scene.add(this.mesh)
-
-
-
-        // //create cube
-        // //this.geometry = new THREE.BoxGeometry(1, 1, 1);
-        // this.geometry = this.resources.items.bufferTerrain;
-        //
-        // this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-        // this.cube = new THREE.Mesh(this.geometry, this.material);
-        // this.scene.add(this.cube);
     }
 
     resize() {

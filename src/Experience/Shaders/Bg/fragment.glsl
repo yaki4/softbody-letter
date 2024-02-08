@@ -13,7 +13,7 @@ varying vec2 v_uv;
 #define PI	3.141592653589793
 #define TWO_PI 6.2831853071795864
 
-#include <getBlueNoise>
+#include ../BlueNoise/getBlueNoiseShader.glsl;
 
 vec3 LinearTosRGB( in vec3 value ) {
     return mix( pow( value, vec3( 0.41666 ) ) * 1.055 - vec3( 0.055 ), value * 12.92, vec3( lessThanEqual( value, vec3( 0.0031308 ) ) ) );
@@ -34,6 +34,6 @@ void main () {
     gl_FragColor.rgb = LinearTosRGB(color);
 
     gl_FragColor.rgb += blueNoise.x / 255.0;
-    gl_FragColor.a = 0.0;
+    gl_FragColor.a = 1.0;
     // gl_FragColor = vec4(v_uv, 0. ,1.);
 }
