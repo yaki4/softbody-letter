@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform vec2 u_aspect;
 varying vec2 v_uv;
 

@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 attribute vec4 a_random;
 attribute vec3 a_instancePosition;
 

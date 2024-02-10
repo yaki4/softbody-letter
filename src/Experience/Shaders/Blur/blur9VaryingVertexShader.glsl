@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 attribute vec3 position;
 
 uniform vec2 u_delta;

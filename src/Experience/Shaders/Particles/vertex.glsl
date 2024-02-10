@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 attribute vec2 a_simUv;
 attribute float a_dist;
 
@@ -8,7 +7,7 @@ uniform float u_particleSize;
 varying vec3 v_viewNormal;
 
 uniform sampler2D u_lightFieldSlicedTexture;
-#include <lightFieldSlice>
+#include ../AboutHeroLightField/sliceShader.glsl
 
 varying float v_ao;
 varying float v_dist;

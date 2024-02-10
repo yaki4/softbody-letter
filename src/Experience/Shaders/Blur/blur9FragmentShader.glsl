@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform sampler2D u_texture;
 uniform vec2 u_delta;
 

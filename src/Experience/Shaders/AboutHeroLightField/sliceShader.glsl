@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform vec2 u_lightFieldSlicedTextureSize;
 uniform vec2 u_lightFieldSliceColRowCount;
 uniform vec3 u_lightFieldGridCount;

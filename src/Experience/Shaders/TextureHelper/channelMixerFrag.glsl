@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform sampler2D u_texture;
 uniform vec4 u_channelMixerR;
 uniform vec4 u_channelMixerG;

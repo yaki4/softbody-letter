@@ -1,10 +1,9 @@
-#define GLSLIFY 1
 uniform sampler2D u_prevSliceTexture;
 uniform sampler2D u_drawnSliceTexture;
 
 varying vec2 v_uv;
 
-#include <lightFieldSlice>
+#include ../AboutHeroLightField/sliceShader.glsl
 
 vec4 sampleSlice4 (vec3 gridPos) {
     vec3 sliceOffset = vec3(-.5, .5, 0.);

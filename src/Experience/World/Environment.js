@@ -10,7 +10,8 @@ export default class Environment
         this.resources = this.experience.resources
         this.debug = this.experience.debug
 
-        this.scene.colorSpace = THREE.SRGBColorSpace
+        //this.scene.colorSpace = THREE.SRGBColorSpace
+        //this.scene.encoding = THREE.LinearEncoding
 
         //this.setAmbientLight()
 

@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import Experience from '../Experience.js'
 import gsap from "gsap";
 import * as DetectUA from "../Utils/DetectUA.js"
+import MinSignal from "min-signal"
 
 const detectUA = DetectUA.default
 const userAgent = (navigator.userAgent || navigator.vendor).toLowerCase()
@@ -82,8 +83,8 @@ export default class Properties {
     brightness = 1;
     tintColorHex = "#382968";
     tintOpacity = .05;
-    //exporterSignal = new MinSignal$2;
-    //onFirstClicked = new MinSignal$2;
+    exporterSignal = new MinSignal;
+    onFirstClicked = new MinSignal;
     isPreloaderFinished = !1;
     pointsGeometry;
     heroColorHex = "#5c4d8f";
@@ -132,7 +133,7 @@ export default class Properties {
     CROSS_ORIGINS = {"https://example.com/": "anonymous"};
     IS_DEV = false;
     LOG = false;
-    SKIP_ANIMATION = false;
+    SKIP_ANIMATION = true;
     LOOK_DEV_MODE = false;
 
     constructor() {
@@ -140,5 +141,13 @@ export default class Properties {
         this.renderer = this.experience.renderer.instance
         this.scene = this.experience.scene
         this.camera = this.experience.camera.instance
+        this.canvas = this.experience.canvas
+
+        this.viewportWidth = window.innerWidth
+        this.viewportHeight = window.innerHeight
+
+        this.viewportResolution = new THREE.Vector2(this.viewportWidth, this.viewportHeight)
+        this.width = this.viewportWidth
+        this.height = this.viewportHeight
     }
 }

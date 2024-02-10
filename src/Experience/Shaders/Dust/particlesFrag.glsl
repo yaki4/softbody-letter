@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 varying float v_softness;
 varying float v_opacity;
 varying vec2 v_uv;

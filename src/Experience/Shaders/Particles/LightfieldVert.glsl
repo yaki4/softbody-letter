@@ -1,10 +1,9 @@
-#define GLSLIFY 1
 attribute vec2 position;
 attribute float dist;
 uniform sampler2D u_currPositionLifeTexture;
 uniform vec3 u_color;
 
-#include <lightFieldSlice>
+#include ../AboutHeroLightField/sliceShader.glsl
 
 varying vec4 v_color;
 

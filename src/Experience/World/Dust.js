@@ -85,7 +85,7 @@ export default class Dust {
 
     }
 
-    update() {
-        this.mesh && (this.mesh.material.uniforms.u_time.value += this.time.delta)
+    update(delta) {
+        this.mesh && (this.mesh.material.uniforms.u_time.value += delta)
     }
 }

@@ -14,6 +14,7 @@ export default class Support {
         this.properties = this.experience.world.properties
 
         this.properties.isSupported = this.isSupported()
+        this.renderer.context = this.properties.gl
     }
 
     isSupported() {
@@ -40,13 +41,13 @@ export default class Support {
     checkSupportWebGL() {
         if (!(this.properties.canvas instanceof HTMLCanvasElement)) return !1;
         if (this.properties.USE_WEBGL2 && window.WebGL2RenderingContext) try {
-            return this.properties.gl = this.properties.canvas.getContext("webgl2", this.properties.webglOpts), this.properties.RENDER_TARGET_FLOAT_TYPE = HalfFloatType, this.properties.DATA_FLOAT_TYPE = FloatType, !0
+            return this.properties.gl = this.properties.canvas.getContext("webgl2", this.properties.webglOpts), this.properties.RENDER_TARGET_FLOAT_TYPE = THREE.HalfFloatType, this.properties.DATA_FLOAT_TYPE = THREE.FloatType, !0
         } catch (e) {
             return console.error(e), !1
         }
         if (this.properties.USE_WEBGL2 = !1, window.WebGLRenderingContext) try {
             let e = this.properties.gl = this.properties.canvas.getContext("webgl", this.properties.webglOpts) || this.properties.canvas.getContext("experimental-webgl", this.properties.webglOpts);
-            if ((e.getExtension("OES_texture_float") || e.getExtension("OES_texture_half_float")) && e.getParameter(e.MAX_VERTEX_TEXTURE_IMAGE_UNITS)) this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.isIOS || e.getExtension("OES_texture_half_float") ? HalfFloatType : FloatType, this.properties.DATA_FLOAT_TYPE = FloatType; else return this.properties.USE_FLOAT_PACKING = !0, this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.DATA_FLOAT_TYPE = UnsignedByteType, !1;
+            if ((e.getExtension("OES_texture_float") || e.getExtension("OES_texture_half_float")) && e.getParameter(e.MAX_VERTEX_TEXTURE_IMAGE_UNITS)) this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.isIOS || e.getExtension("OES_texture_half_float") ? THREE.HalfFloatType : THREE.FloatType, this.properties.DATA_FLOAT_TYPE = THREE.FloatType; else return this.properties.USE_FLOAT_PACKING = !0, this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.DATA_FLOAT_TYPE = THREE.UnsignedByteType, !1;
             return !0
         } catch (e) {
             return console.error(e), !1

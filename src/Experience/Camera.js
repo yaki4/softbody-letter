@@ -5,6 +5,8 @@ import gsap from "gsap";
 
 export default class Camera
 {
+    useOrbitControls = !0;
+
     constructor()
     {
         this.experience = new Experience()
@@ -18,16 +20,16 @@ export default class Camera
         this.lerpVector = new THREE.Vector3();
 
         this.setInstance()
-        this.setControls()
+        //this.setControls()
     }
 
     setInstance()
     {
-        this.instance = new THREE.PerspectiveCamera(60, 1, 0.1, 300)
-        this.defaultCameraPosition = new THREE.Vector3(-0.5, 0.0, 4);
+        this.instance = new THREE.PerspectiveCamera(60, this.sizes.width / this.sizes.height, .1, 50)
+        this.defaultCameraPosition = new THREE.Vector3(.455, 0, 3.5);
 
         this.instance.position.copy(this.defaultCameraPosition)
-        this.instance.lookAt(new THREE.Vector3(0, 0.0, 0));
+        this.instance.lookAt(new THREE.Vector3(.455, 0, 0));
 
         this.lerpVector.copy(this.instance.position);
 
@@ -61,7 +63,7 @@ export default class Camera
 
     update()
     {
-        this.controls.update()
+        //this.controls.update()
 
         this.instance.updateMatrixWorld() // To be used in projection
     }

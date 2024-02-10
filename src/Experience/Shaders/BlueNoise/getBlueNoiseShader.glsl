@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform sampler2D u_blueNoiseTexture;
 uniform vec2 u_blueNoiseTexelSize;
 uniform vec2 u_blueNoiseCoordOffset;

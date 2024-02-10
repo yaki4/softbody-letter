@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform float u_opacity;
 uniform float u_time;
 uniform vec3 u_color;

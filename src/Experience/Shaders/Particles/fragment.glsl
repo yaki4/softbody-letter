@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 varying vec3 v_viewNormal;
 varying float v_ao;
 varying float v_dist;
@@ -50,5 +49,7 @@ vec3 ACESFilmicToneMapping( vec3 color ) {
 }
 
 void main () {
-    gl_FragColor = vec4(ACESFilmicToneMapping(vec3(v_color)), v_emission);
+
+    //gl_FragColor = vec4(ACESFilmicToneMapping(vec3(v_color)), v_emission);
+    gl_FragColor = vec4(ACESFilmicToneMapping(vec3(v_color)), 1.0);
 }

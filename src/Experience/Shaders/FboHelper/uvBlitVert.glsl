@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 attribute vec2 position;
 attribute vec2 uv;
 varying vec2 v_uv;

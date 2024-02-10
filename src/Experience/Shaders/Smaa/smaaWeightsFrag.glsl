@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 #define SMAASampleLevelZeroOffset( tex, coord, offset ) texture2D( tex, coord + float( offset ) * u_texelSize, 0.0 )
 
 uniform sampler2D u_edgesTexture;

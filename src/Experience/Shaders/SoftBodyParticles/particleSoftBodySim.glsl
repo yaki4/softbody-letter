@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform float u_time;
 uniform float u_deltaTime;
 uniform sampler2D u_tetsTexture;

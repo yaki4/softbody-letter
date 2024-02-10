@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 attribute vec2 center;
 attribute float letterIndex;
 

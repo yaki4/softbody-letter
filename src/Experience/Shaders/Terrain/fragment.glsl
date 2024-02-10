@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform sampler2D u_texture;
 uniform float u_time;
 uniform vec2 u_resolution;
@@ -31,5 +30,5 @@ void main () {
     // float zRatio = (v_worldPosition.z - (-2.399479)) / 4.087055;
     // float r = linearStep(0., 1., u_startRatio * 2. - (1. - zRatio));
     // color *= 0.08 + r * r * 0.92;
-    gl_FragColor = vec4(color, 0.);
+    gl_FragColor = vec4(color, 1.);
 }

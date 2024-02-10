@@ -47,23 +47,22 @@ export default class Bg {
             fragmentShader: frag
         }))
         this.mesh.frustumCulled = false
-        //this.mesh.renderOrder = -2
+        this.mesh.renderOrder = -2
 
 
-
-        let e = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1).translate(0, -.5, -.5), new THREE.MeshBasicMaterial({
-            color: 0,
-            blending: THREE.CustomBlending,
-            blendEquation: THREE.AddEquation,
-            blendSrc: THREE.SrcAlphaFactor,
-            blendDst: THREE.OneMinusSrcAlphaFactor,
-            blendEquationAlpha: THREE.AddEquation,
-            blendSrcAlpha: THREE.ZeroFactor,
-            blendDstAlpha: THREE.OneFactor
-        }));
-        e.position.set(0, -1.05, 1.657583)
-        e.scale.set(1e3, 1e3, 2)
-        this.scene.add(e);
+        // let e = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1).translate(0, -.5, -.5), new THREE.MeshBasicMaterial({
+        //     color: 0,
+        //     blending: THREE.CustomBlending,
+        //     blendEquation: THREE.AddEquation,
+        //     blendSrc: THREE.SrcAlphaFactor,
+        //     blendDst: THREE.OneMinusSrcAlphaFactor,
+        //     blendEquationAlpha: THREE.AddEquation,
+        //     blendSrcAlpha: THREE.ZeroFactor,
+        //     blendDstAlpha: THREE.OneFactor
+        // }));
+        // e.position.set(0, -1.05, 1.657583)
+        // e.scale.set(1e3, 1e3, 2)
+        // this.scene.add(e);
 
         this.scene.add(this.mesh)
     }

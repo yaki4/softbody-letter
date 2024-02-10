@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 varying vec3 v_color;
 varying vec2 v_uv;
 

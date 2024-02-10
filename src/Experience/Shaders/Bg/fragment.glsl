@@ -1,4 +1,3 @@
-#define GLSLIFY 1
 uniform vec3 u_color1;
 uniform vec3 u_color2;
 uniform vec3 u_color3;

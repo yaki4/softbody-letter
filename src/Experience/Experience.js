@@ -47,7 +47,7 @@ export default class Experience
         this.resources = new Resources(sources)
 
         // Options
-        THREE.ColorManagement.enabled = false
+        //THREE.ColorManagement.enabled = false
         this.canvas = _canvas
 
         // Setup
@@ -105,9 +105,9 @@ export default class Experience
         if ( this.debug.active )
             this.debug.panel.refresh()
         this.timeline.time(this.time.elapsed);
-        this.camera.update()
-        this.world.update()
-        this.renderer.update()
+        this.camera.update(this.time.delta)
+        this.world.update(this.time.delta)
+        this.renderer.update(this.time.delta)
     }
 
     setDefaultCode(){

@@ -27,20 +27,22 @@ export default class Renderer
 
         this.instance = new THREE.WebGLRenderer({
             canvas: this.canvas,
-            powerPreference: "high-performance",
-            antialias: false,
-            alpha: false,
+            //powerPreference: "high-performance",
+            //antialias: false,
+            //alpha: false,
             // stencil: false,
             // depth: false,
-            useLegacyLights: false,
-            physicallyCorrectLights: true,
+            //useLegacyLights: false,
+            //physicallyCorrectLights: true,
         })
 
-        this.instance.outputColorSpace = THREE.SRGBColorSpace
+        //this.instance.outputColorSpace = THREE.SRGBColorSpace
+        //this.instance.encoding = THREE.LinearEncoding
+
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(Math.min(this.sizes.pixelRatio, 2))
 
-        this.instance.setClearColor(this.clearColor, 1)
+        //this.instance.setClearColor(this.clearColor, 1)
         this.instance.setSize(this.sizes.width, this.sizes.height)
     }
 
@@ -61,7 +63,7 @@ export default class Renderer
 
     update()
     {
-        this.instance.render(this.scene, this.camera.instance)
+        //this.instance.render(this.scene, this.camera.instance)
     }
 
     destroy()
