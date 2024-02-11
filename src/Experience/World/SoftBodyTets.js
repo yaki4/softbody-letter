@@ -138,9 +138,15 @@ export default class SoftBodyTets {
 
     updateMouseProj(e) {
         if (!this.properties.isMobile || this.input.isDown) {
-            _v0.set(this.input.mouseXY.x, this.input.mouseXY.y, 1), _v0.unproject(this.properties.camera), _v0.sub(this.properties.camera.position).normalize(), _v1.set(0, 0, -1).applyQuaternion(this.properties.camera.quaternion);
+            _v0.set(this.input.mouseXY.x, this.input.mouseXY.y, 1),
+            _v0.unproject(this.properties.camera),
+            _v0.sub(this.properties.camera.position).normalize(),
+            _v1.set(0, 0, -1).applyQuaternion(this.properties.camera.quaternion);
             const t = this.properties.cameraDistance / _v0.dot(_v1);
-            this.mouseProjPrev.copy(this.mouseProj), this.mouseProj.copy(this.properties.camera.position).add(_v0.multiplyScalar(t)), this.properties.isMobile && !this.input.wasDown && this.mouseProjPrev.copy(this.mouseProj), this.mouseVel.subVectors(this.mouseProj, this.mouseProjPrev).multiplyScalar(1 / e)
+            this.mouseProjPrev.copy(this.mouseProj),
+            this.mouseProj.copy(this.properties.camera.position).add(_v0.multiplyScalar(t)),
+            this.properties.isMobile && !this.input.wasDown && this.mouseProjPrev.copy(this.mouseProj),
+            this.mouseVel.subVectors(this.mouseProj, this.mouseProjPrev).multiplyScalar(1 / e)
         } else this.mouseVel.setScalar(0)
     }
 

@@ -13,6 +13,7 @@
     "vite-plugin-glsl": "^1.2.1"
   },
   "dependencies": {
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "gsap": "^3.7.1",
     "min-signal": "^1.0.2",
     "normalize-wheel": "^1.0.1",

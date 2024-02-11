@@ -120,11 +120,37 @@ export default class World
     }
 
     resize() {
+        let e = this.properties.viewportWidth = window.innerWidth, t = this.properties.viewportHeight = window.innerHeight;
+        this.properties.viewportResolution.set(e, window.innerHeight), document.documentElement.style.setProperty("--vh", t * .01 + "px");
+        let i = this.properties.UP_SCALE, n = e * this.properties.DPR, r = t * this.properties.DPR;
+        if (this.properties.USE_PIXEL_LIMIT === !0 && n * r > this.properties.MAX_PIXEL_COUNT) {
+            let a = n / r;
+            r = Math.sqrt(this.properties.MAX_PIXEL_COUNT / a), n = Math.ceil(r * a), r = Math.ceil(r)
+        }
+        this.properties.width = Math.ceil(n / i)
+        this.properties.height = Math.ceil(r / i)
+        this.properties.resolution.set(this.properties.width, this.properties.height)
+        this.properties.isMobileWidth = e <= 812
+        //app.resize(n, r)
 
+        this.properties.renderer.setSize(n, r)
+        this.properties.canvas.style.width = `${this.properties.viewportWidth}px`
+        this.properties.canvas.style.height = `${this.properties.viewportHeight}px`
+        this.properties.camera.aspect = this.properties.width / this.properties.height
+        // visuals.resize(this.properties.width, this.properties.height),
+        this.softBody.resize(n, r)
+        this.innerPart.resize(n, r)
+        this.bg.resize(n, r)
+        this.dust.resize(n, r)
+        this.terrain.resize(n, r)
+
+        this.properties.width < this.properties.height ? this.properties.scaleFactor = this.properties.width / this.properties.height : this.properties.scaleFactor = 1
     }
 
     update(delta)
     {
+        this.input && this.input.update(delta)
+
         if(this.properties) {
             this.properties.sharedUniforms.u_time.value += delta
             this.properties.deltaTime = this.properties.sharedUniforms.u_deltaTime.value = delta
@@ -176,16 +202,6 @@ export default class World
         this.terrain && this.terrain.update(delta)
 
 
-
-
-
-        // heroTexts.update(e)
-        // terrain.update(e)
-        // lightField.update(e)
-        // softBody.update(e)
-        // innerPart.update(e)
-        // particles.update(e)
-        // lightField.postUpdate(e)
-        // terrain.update(e)
+        this.input && this.input.postUpdate(delta)
     }
 }
