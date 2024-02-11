@@ -146,7 +146,8 @@ export default class Renderer
         if(this.debug)
         {
             this.debugFolder = this.debug.addFolder({
-                title: 'renderer'
+                title: 'renderer',
+                expanded: false
             })
 
             const debugFolder = this.debugFolder

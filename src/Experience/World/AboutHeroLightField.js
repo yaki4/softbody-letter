@@ -16,19 +16,18 @@ export default class AboutHeroLightField {
     sliceColumnCount = 0;
     sliceRowCount = 0;
     gridSize = 0;
-    SHOW_TEST_VOXELS = !1;
+    SHOW_TEST_VOXELS = false;
     sharedUniforms = {
-        u_lightFieldTexture3D: {value: null},
-        u_lightFieldMaxLod: {value: 0},
-        u_lightFieldSlicedTexture: {value: null},
-        u_lightFieldSlicedTextureSize: {value: new THREE.Vector2},
-        u_lightFieldSliceColRowCount: {value: new THREE.Vector2},
-        u_lightFieldGridSize: {value: 0},
-        u_lightFieldGridCount: {value: this.GRID_COUNT},
-        u_lightFieldVolumeOffset: {value: new THREE.Vector3},
-        u_lightFieldVolumeSize: {value: new THREE.Vector3}
+        u_lightFieldTexture3D: { value: null },
+        u_lightFieldMaxLod: { value: 0 },
+        u_lightFieldSlicedTexture: { value: null },
+        u_lightFieldSlicedTextureSize: { value: new THREE.Vector2 },
+        u_lightFieldSliceColRowCount: { value: new THREE.Vector2 },
+        u_lightFieldGridSize: { value: 0 },
+        u_lightFieldGridCount: { value: this.GRID_COUNT },
+        u_lightFieldVolumeOffset: { value: new THREE.Vector3 },
+        u_lightFieldVolumeSize: { value: new THREE.Vector3 }
     };
-
 
     constructor() {
         this.experience = new Experience()
@@ -45,42 +44,82 @@ export default class AboutHeroLightField {
     }
 
     init() {
-        /*shaderHelper.addChunk("lightFieldSlice", sliceShader), */ this.gridSize = this.VOLUME_SIZE.x / (this.GRID_COUNT.x - 1), this.sharedUniforms.u_lightFieldGridSize.value = this.gridSize, this.VOLUME_SIZE.y = this.gridSize * (this.GRID_COUNT.y - 1), this.VOLUME_SIZE.z = this.gridSize * (this.GRID_COUNT.z - 1), this.sharedUniforms.u_lightFieldVolumeSize.value.setScalar(this.gridSize).add(this.VOLUME_SIZE), this.sharedUniforms.u_lightFieldMaxLod.value = Math.log2(Math.min(this.GRID_COUNT.x, this.GRID_COUNT.y, this.GRID_COUNT.z));
-        let e = this.GRID_COUNT.x * this.GRID_COUNT.y * this.GRID_COUNT.z,
-            t = this.sliceColumnCount = Math.ceil(Math.sqrt(e) / this.GRID_COUNT.x),
-            i = this.sliceRowCount = Math.ceil(this.GRID_COUNT.z / t);
-        this.sharedUniforms.u_lightFieldSliceColRowCount.value.set(t, i);
-        let n = this.GRID_COUNT.x * t, r = this.GRID_COUNT.y * i;
-        this.sharedUniforms.u_lightFieldSlicedTextureSize.value.set(n, r), this.currSliceRenderTarget = this.fboHelper.createRenderTarget(n, r), this.prevSliceRenderTarget = this.currSliceRenderTarget.clone(), this.drawnSliceRenderTarget = this.currSliceRenderTarget.clone(), this.fboHelper.clearColor(0, 0, 0, 0, this.currSliceRenderTarget), this.sliceBlendMaterial = this.fboHelper.createRawShaderMaterial({
+        this.gridSize = this.VOLUME_SIZE.x / (this.GRID_COUNT.x - 1)
+        this.sharedUniforms.u_lightFieldGridSize.value = this.gridSize
+        this.VOLUME_SIZE.y = this.gridSize * (this.GRID_COUNT.y - 1)
+        this.VOLUME_SIZE.z = this.gridSize * (this.GRID_COUNT.z - 1)
+        this.sharedUniforms.u_lightFieldVolumeSize.value.setScalar(this.gridSize).add(this.VOLUME_SIZE)
+        this.sharedUniforms.u_lightFieldMaxLod.value = Math.log2(Math.min(this.GRID_COUNT.x, this.GRID_COUNT.y, this.GRID_COUNT.z))
+
+        let totalCells = this.GRID_COUNT.x * this.GRID_COUNT.y * this.GRID_COUNT.z
+        let sliceColumnCount = this.sliceColumnCount = Math.ceil(Math.sqrt(totalCells) / this.GRID_COUNT.x)
+        let sliceRowCount = this.sliceRowCount = Math.ceil(this.GRID_COUNT.z / sliceColumnCount)
+
+        this.sharedUniforms.u_lightFieldSliceColRowCount.value.set(sliceColumnCount, sliceRowCount);
+        let gridCountX = this.GRID_COUNT.x * sliceColumnCount
+        let gridCountY = this.GRID_COUNT.y * sliceRowCount
+
+        this.sharedUniforms.u_lightFieldSlicedTextureSize.value.set(gridCountX, gridCountY)
+        this.currSliceRenderTarget = this.fboHelper.createRenderTarget(gridCountX, gridCountY)
+        this.prevSliceRenderTarget = this.currSliceRenderTarget.clone()
+        this.drawnSliceRenderTarget = this.currSliceRenderTarget.clone()
+        this.fboHelper.clearColor(0, 0, 0, 0, this.currSliceRenderTarget)
+
+        this.sliceBlendMaterial = this.fboHelper.createRawShaderMaterial({
             uniforms: {
                 u_lightFieldSlicedTextureSize: this.sharedUniforms.u_lightFieldSlicedTextureSize,
                 u_lightFieldSliceColRowCount: this.sharedUniforms.u_lightFieldSliceColRowCount,
                 u_lightFieldGridCount: this.sharedUniforms.u_lightFieldGridCount,
                 u_lightFieldVolumeOffset: this.sharedUniforms.u_lightFieldVolumeOffset,
                 u_lightFieldVolumeSize: this.sharedUniforms.u_lightFieldVolumeSize,
-                u_prevSliceTexture: {value: null},
-                u_drawnSliceTexture: {value: this.drawnSliceRenderTarget.texture}
+                u_prevSliceTexture: { value: null },
+                u_drawnSliceTexture: { value: this.drawnSliceRenderTarget.texture }
             }, fragmentShader: sliceBlendFrag
         })
     }
 
-    update(e) {
-        let t = this.VOLUME_SIZE.clone().multiplyScalar(.5).sub(this.ORIGIN).multiplyScalar(-1);
-        this.sharedUniforms.u_lightFieldVolumeOffset.value.setScalar(-this.gridSize / 2).add(t);
-        let i = this.properties.renderer, n = this.fboHelper.getColorState(), r = i.getRenderTarget();
-        i.setRenderTarget(this.drawnSliceRenderTarget), i.setClearColor(0, 0), i.clear(), i.setRenderTarget(r), this.fboHelper.setColorState(n)
+    update(delta) {
+        let lightFieldCenterOffset = this.VOLUME_SIZE.clone().multiplyScalar(.5).sub(this.ORIGIN).multiplyScalar(-1);
+        this.sharedUniforms.u_lightFieldVolumeOffset.value.setScalar(-this.gridSize / 2).add(lightFieldCenterOffset);
+
+        let renderer = this.properties.renderer
+        let currentColorState = this.fboHelper.getColorState()
+        let currentRenderTarget = renderer.getRenderTarget()
+
+        renderer.setRenderTarget(this.drawnSliceRenderTarget)
+        renderer.setClearColor(0, 0)
+        renderer.clear()
+        renderer.setRenderTarget(currentRenderTarget)
+        this.fboHelper.setColorState(currentColorState)
     }
 
-    renderMesh(e) {
-        let t = this.properties.renderer, i = this.fboHelper.getColorState(), n = t.getRenderTarget();
-        t.autoClearColor = !1, this.fboHelper.renderMesh(e, this.drawnSliceRenderTarget), t.setRenderTarget(n), this.fboHelper.setColorState(i)
+    renderMesh(delta) {
+        let renderer = this.properties.renderer
+        let currentColorState = this.fboHelper.getColorState()
+        let currentRenderTarget = renderer.getRenderTarget()
+
+        renderer.autoClearColor = false
+        this.fboHelper.renderMesh(delta, this.drawnSliceRenderTarget)
+        renderer.setRenderTarget(currentRenderTarget)
+        this.fboHelper.setColorState(currentColorState)
     }
 
-    postUpdate(e) {
-        let t = this.properties.renderer, i = this.fboHelper.getColorState(), n = t.getRenderTarget();
-        this.properties.gl, t.autoClear = !1;
-        let r = this.prevSliceRenderTarget;
-        this.prevSliceRenderTarget = this.currSliceRenderTarget, this.currSliceRenderTarget = r, this.sharedUniforms.u_lightFieldSlicedTexture.value = this.currSliceRenderTarget.texture, this.sliceBlendMaterial.uniforms.u_prevSliceTexture.value = this.prevSliceRenderTarget.texture, this.fboHelper.render(this.sliceBlendMaterial, this.currSliceRenderTarget), t.setRenderTarget(n), this.fboHelper.setColorState(i)
+    postUpdate(delta) {
+        let renderer = this.properties.renderer //t
+        let currentColorState = this.fboHelper.getColorState() //i
+        let currentRenderTarget = renderer.getRenderTarget() //n
+
+        /*this.properties.gl, */
+        renderer.autoClear = false;
+
+        let prevSliceRenderTarget = this.prevSliceRenderTarget
+        this.prevSliceRenderTarget = this.currSliceRenderTarget
+        this.currSliceRenderTarget = prevSliceRenderTarget
+        this.sharedUniforms.u_lightFieldSlicedTexture.value = this.currSliceRenderTarget.texture
+        this.sliceBlendMaterial.uniforms.u_prevSliceTexture.value = this.prevSliceRenderTarget.texture
+        this.fboHelper.render(this.sliceBlendMaterial, this.currSliceRenderTarget)
+        renderer.setRenderTarget(currentRenderTarget)
+        this.fboHelper.setColorState(currentColorState)
     }
 
 }
