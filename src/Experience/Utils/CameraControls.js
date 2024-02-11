@@ -23,8 +23,8 @@ export default class CameraControls {
     useOrbitControls = true;
 
     preInit(e) {
-        this.DEFAULT_CAMERA_POSITION = new THREE.Vector3(.455, 0, 3.5)
-        this.DEFAULT_LOOKAT_POSITION = new THREE.Vector3(.455, 0, 0)
+        this.DEFAULT_CAMERA_POSITION = new THREE.Vector3(0, 0, 3.5)
+        this.DEFAULT_LOOKAT_POSITION = new THREE.Vector3(0, 0, 0)
         this._brownianMotion = null, this._orbitControls = null
         this._orbitCamera = null, this._camera = null
         this._deviceOrientationControls = null

@@ -134,30 +134,7 @@ export default class World
             this.cameraControls && this.cameraControls.update(delta)
             this.properties.bgColor.setStyle(this.properties.bgColorHex)
             this.properties.renderer.setClearColor(0, 1)
-
-            // this.properties.bloom.amount = this.properties.bloomAmount
-            // this.properties.bloom.radius = this.properties.bloomRadius
-            // this.properties.bloom.threshold = this.properties.bloomThreshold
-            // this.properties.bloom.smoothWidth = this.properties.bloomSmoothWidth
-            // this.properties.bloom.haloWidth = this.properties.haloWidth
-            // this.properties.bloom.haloRGBShift = this.properties.haloRGBShift
-            // this.properties.bloom.haloStrength = this.properties.haloStrength
-            // this.properties.bloom.haloMaskInner = this.properties.haloMaskInner
-            // this.properties.bloom.haloMaskOuter = this.properties.haloMaskOuter
-            // this.properties.final.vignetteFrom = this.properties.vignetteFrom
-            // this.properties.final.vignetteTo = this.properties.vignetteTo
-            // this.properties.final.vignetteColor.setStyle(this.properties.vignetteColorHex)
-            // this.properties.final.saturation = this.properties.saturation
-            // this.properties.final.contrast = this.properties.contrast
-            // this.properties.final.brightness = this.properties.brightness
-            // this.properties.final.tintColor.setStyle(this.properties.tintColorHex)
-            // this.properties.final.tintOpacity = this.properties.tintOpacity
-            // this.properties.final.bgColor.setStyle(this.properties.bgColorHex)
-            // this.properties.final.opacity = math.fit(this.properties.startTime, 0, 2, 0, 1)
-            //this.properties.postprocessing.render(this.properties.scene, this.properties.camera, !0)
-            this.properties.renderer.render(this.properties.scene, this.properties.camera)
         }
-
 
         this.blueNoise && this.blueNoise.update(delta)
         this.bg && this.bg.update(delta)
