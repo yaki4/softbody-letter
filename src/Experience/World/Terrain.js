@@ -32,7 +32,7 @@ export default class Terrain {
                 u_time: new THREE.Uniform(0),
                 u_resolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width, this.sizes.height)),
             },
-            this.lightField.sharedUniforms,
+            //this.lightField.sharedUniforms,
             this.blueNoise.sharedUniforms),
             vertexShader: vert,
             fragmentShader: frag
@@ -43,7 +43,8 @@ export default class Terrain {
     }
 
     resize() {
-
+        this.mesh.material.uniforms.u_resolution.value.x = this.sizes.width;
+        this.mesh.material.uniforms.u_resolution.value.y = this.sizes.height;
     }
 
     setDebug() {

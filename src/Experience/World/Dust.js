@@ -77,7 +77,8 @@ export default class Dust {
     }
 
     resize() {
-
+        this.material.uniforms.u_resolution.value.x = this.sizes.width;
+        this.material.uniforms.u_resolution.value.y = this.sizes.height;
     }
 
     setDebug() {
