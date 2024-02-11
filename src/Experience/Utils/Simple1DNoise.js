@@ -1,10 +1,3 @@
-import * as THREE from 'three'
-import Experience from '../Experience.js'
-import gsap from "gsap";
-
-import MathUtils from './MathUtils.js'
-const math = new MathUtils()
-
 export default class Simple1DNoise {
     static MAX_VERTICES = 256;
     static MAX_VERTICES_MASK = Simple1DNoise.MAX_VERTICES - 1;

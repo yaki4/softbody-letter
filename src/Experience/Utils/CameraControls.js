@@ -3,8 +3,6 @@ import Experience from '../Experience.js'
 import gsap from "gsap";
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import BrownianMotion from "./BrownianMotion.js";
-import MathUtils from './MathUtils.js'
-const math = new MathUtils()
 import ease from './Ease.js'
 
 import DeviceOrientationControls from './DeviceOrientationControls.js'

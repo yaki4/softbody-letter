@@ -1,8 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 
-import sliceShader from '../Shaders/AboutHeroLightField/sliceShader.glsl'
 import sliceBlendFrag from '../Shaders/AboutHeroLightField/sliceBlendFrag.glsl'
 
 export default class AboutHeroLightField {

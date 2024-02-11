@@ -1,10 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
-import BrownianMotion from "./BrownianMotion.js";
 import { MathUtils } from 'three';
-import ease from './Ease.js'
 
 export default class DeviceOrientationControls {
     experience = new Experience()

@@ -1,9 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
-import MathUtils from '../Utils/MathUtils.js'
-const math = new MathUtils()
-
 
 export default class SoftBody {
     container = new THREE.Object3D;

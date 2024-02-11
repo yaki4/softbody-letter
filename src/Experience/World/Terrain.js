@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 
 import vert from '../Shaders/Terrain/vertex.glsl'
 import frag from '../Shaders/Terrain/fragment.glsl'
@@ -18,9 +17,6 @@ export default class Terrain {
         this.sizes = this.experience.sizes
         this.lightField = this.experience.world.lightField
         this.blueNoise = this.experience.world.blueNoise
-
-        this.timeline = this.experience.timeline;
-
 
         this.init()
     }

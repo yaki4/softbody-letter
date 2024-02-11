@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 import SecondOrderDynamics from './SecondOrderDynamics.js'
 import MathUtils from './MathUtils.js'
 const math = new MathUtils()

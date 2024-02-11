@@ -1,8 +1,4 @@
-import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
-import MathUtils from '../Utils/MathUtils.js'
-const math = new MathUtils()
 
 function vecSetZero(o, e) {
     e *= 3, o[e++] = 0, o[e++] = 0, o[e] = 0

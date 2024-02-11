@@ -7,16 +7,12 @@ import Properties from "./Properties.js";
 import BlueNoise from "./BlueNoise.js";
 import FboHelper from "./FboHelper.js";
 import Bg from './Bg.js'
-import Letter from './Letter.js'
+
 import Dust from './Dust.js'
 import Terrain from './Terrain.js'
 import AboutHeroLightField from "./AboutHeroLightField.js";
 import Support from "../Utils/Support.js";
-import Postprocessing from "../Utils/Postprocessing.js";
-import Smaa from "../Utils/Smaa.js";
-import Bloom from "../Utils/Bloom.js";
-import Blur from "../Utils/Blur.js";
-import Final from "../Utils/Final.js";
+
 import CameraControls from "../Utils/CameraControls.js";
 import Input from "../Utils/Input.js";
 import SoftBody from "./SoftBody.js";
@@ -48,34 +44,14 @@ export default class World
             this.experience.time.elapsed = 0
 
             // Setup
-            this.math = new MathUtils()
+            window.math = this.math = new MathUtils()
             this.properties = new Properties()
             this.support = new Support()
             this.input = new Input()
             this.cameraControls = new CameraControls()
             this.cameraControls.preInit()
             this.fboHelper = new FboHelper()
-            this.postprocessing = new Postprocessing()
             this.blueNoise = new BlueNoise()
-            this.blur = new Blur()
-            // if( (!this.properties.USE_WEBGL2 || !this.properties.USE_MSAA) ) {
-            //     this.properties.smaa = new Smaa()
-            //     this.properties.smaa.init()
-            //
-            //     this.properties.smaa.setTextures(this.resources.items.smaaArea, this.resources.items.smaaSearch)
-            //     this.properties.postprocessing.queue.push(this.properties.smaa)
-            //
-            //     //this.properties.smaa && this.properties.smaa.updateTextures()
-            // }
-
-            // this.properties.bloom = new Bloom()
-            // !this.properties.renderer.extensions.get("OES_texture_float_linear") && !this.properties.renderer.extensions.get("OES_texture_half_float_linear") && (this.properties.bloom.USE_HD = !1)
-            // //this.properties.bloom.init()
-            // //this.properties.postprocessing.queue.push(this.properties.bloom)
-            // this.properties.final = new Final()
-            // this.properties.final.init()
-            //
-            // this.properties.postprocessing.queue.push(this.properties.final)
 
             this.lightField = new AboutHeroLightField()
             this.softBodyTets = new SoftBodyTets()
@@ -86,8 +62,6 @@ export default class World
             this.innerPart = new InnerPart()
             this.particles = new Particles()
 
-
-
             this.softBody.init()
             this.innerPart.init()
             this.particles.init()
@@ -97,11 +71,11 @@ export default class World
             this.scene.add(this.softBody.container)
             this.scene.add(this.innerPart.container)
 
-            //this.letter = new Letter()
             this.bg = new Bg()
             this.dust = new Dust()
             this.terrain = new Terrain()
             this.environment = new Environment()
+
             // Remove preloader
             this.html.preloader.classList.add("preloaded");
             this.html.preloader.remove();

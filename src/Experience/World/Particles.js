@@ -1,8 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
-import MathUtils from '../Utils/MathUtils.js'
-const math = new MathUtils()
 
 import vert from '../Shaders/Particles/vertex.glsl'
 import frag from '../Shaders/Particles/fragment.glsl'

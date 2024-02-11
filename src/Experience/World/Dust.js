@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 
 import particlesVert from '../Shaders/Dust/particlesVert.glsl'
 import particlesFrag from '../Shaders/Dust/particlesFrag.glsl'

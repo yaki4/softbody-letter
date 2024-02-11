@@ -1,6 +1,4 @@
-import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 
 export default class SecondOrderDynamics   {
     experience = new Experience()

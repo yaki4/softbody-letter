@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 
 import blitVert from '../Shaders/FboHelper/blitVert.glsl'
 import blitFrag from '../Shaders/FboHelper/blitFrag.glsl'

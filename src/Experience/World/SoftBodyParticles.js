@@ -1,10 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
-import MathUtils from '../Utils/MathUtils.js'
-const math = new MathUtils()
 import particleSoftBodySim from '../Shaders/SoftBodyParticles/particleSoftBodySim.glsl'
-
 
 export default class SoftBodyParticles {
 

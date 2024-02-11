@@ -1,6 +1,5 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import gsap from "gsap";
 import * as DetectUA from "../Utils/DetectUA.js"
 import MinSignal from "min-signal"
 
