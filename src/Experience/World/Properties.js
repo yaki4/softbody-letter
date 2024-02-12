@@ -130,10 +130,10 @@ export default class Properties {
     HIDE_UI = false;
     JUMP_SECTION = "";
     CROSS_ORIGINS = {"https://example.com/": "anonymous"};
-    IS_DEV = true;
+    IS_DEV = false;
     LOG = false;
     SKIP_ANIMATION = true;
-    LOOK_DEV_MODE = true;
+    LOOK_DEV_MODE = false;
 
     constructor() {
         this.experience = new Experience()
