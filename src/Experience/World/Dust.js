@@ -9,7 +9,6 @@ const PARTICLE_COUNT = 1024;
 export default class Dust {
     mesh;
     material;
-    scrollState;
 
     constructor() {
         this.experience = new Experience()
@@ -20,8 +19,6 @@ export default class Dust {
         this.renderer = this.experience.renderer.instance
         this.resources = this.experience.resources
         this.sizes = this.experience.sizes
-
-        this.timeline = this.experience.timeline;
 
         this.preInit()
     }
