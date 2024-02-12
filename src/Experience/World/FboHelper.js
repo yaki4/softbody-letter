@@ -39,9 +39,9 @@ export default class FboHelper {
         this.init(this.properties.renderer, this.properties.RENDER_TARGET_FLOAT_TYPE)
     }
 
-    init(e, t) {
-        this.renderer = e
-        this.floatType = t
+    init(renderer, floatType) {
+        this.renderer = renderer
+        this.floatType = floatType
         this.isWebGL2 = this.renderer.capabilities.isWebGL2
         this._scene = new THREE.Scene
         this._camera = new THREE.Camera
