@@ -19,9 +19,9 @@ export default class Letter {
         //this.geometry = new THREE.BoxGeometry(1, 1, 1);
         this.geometry = this.resources.items.bufferTerrain;
 
-        this.material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-        this.cube = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.cube);
+        this.material = new THREE.MeshBasicMaterial( { color: 0x00ff00, wireframe: true } );
+        this.cube = new THREE.Mesh( this.geometry, this.material );
+        this.scene.add( this.cube );
 
 
     }

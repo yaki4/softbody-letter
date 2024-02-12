@@ -24,21 +24,21 @@ export default class InnerPart {
     }
 
     init() {
-        const material = new THREE.ShaderMaterial({
+        const material = new THREE.ShaderMaterial( {
             uniforms: {},
             vertexShader: vert,
             fragmentShader: frag
-        })
+        } )
 
-        this.mesh = new THREE.Mesh(this.softBodyInner.geometry, material)
-        this.container.add(this.mesh)
+        this.mesh = new THREE.Mesh( this.softBodyInner.geometry, material )
+        this.container.add( this.mesh )
     }
 
-    resize(e, t) {
+    resize( width, height ) {
 
     }
 
-    update(delta) {
+    update( delta ) {
     }
 
 }

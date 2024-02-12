@@ -27,9 +27,9 @@ export default class Bg {
     }
 
     preInit() {
-        let plane = new THREE.PlaneGeometry(16, 4);
-        this.mesh = new THREE.Mesh(plane, new THREE.ShaderMaterial({
-            uniforms: Object.assign({
+        let plane = new THREE.PlaneGeometry( 16, 4 );
+        this.mesh = new THREE.Mesh( plane, new THREE.ShaderMaterial( {
+            uniforms: Object.assign( {
                 u_time: this.properties.sharedUniforms.u_time,
                 u_color1: { value: new THREE.Color },
                 u_color2: { value: new THREE.Color },
@@ -38,12 +38,12 @@ export default class Bg {
                 u_p2: { value: 2.11 },
                 u_threshold: { value: .312 },
                 u_opacity: { value: 0 }
-            }, this.blueNoise.sharedUniforms),
+            }, this.blueNoise.sharedUniforms ),
             depthWrite: false,
             depthTest: false,
             vertexShader: vert,
             fragmentShader: frag
-        }))
+        } ) )
         this.mesh.frustumCulled = false
         this.mesh.renderOrder = -2
 
@@ -62,20 +62,20 @@ export default class Bg {
         // e.scale.set(1e3, 1e3, 2)
         // this.scene.add(e);
 
-        this.scene.add(this.mesh)
+        this.scene.add( this.mesh )
     }
 
     init() {
     }
 
-    resize(e, t) {
+    resize( width, height ) {
     }
 
-    update(delta) {
-        this.mesh.position.set(this.cameraControls.DEFAULT_LOOKAT_POSITION.x, 0, -3)
-        this.mesh.material.uniforms.u_opacity.value = this.math.fit(this.properties.startTime, 0, 2, .3, 1)
-        this.mesh.material.uniforms.u_color1.value.setStyle(this.colorHex1).convertSRGBToLinear()
-        this.mesh.material.uniforms.u_color2.value.setStyle(this.colorHex2).convertSRGBToLinear()
-        this.mesh.material.uniforms.u_color3.value.setStyle(this.colorHex3).convertSRGBToLinear()
+    update( delta ) {
+        this.mesh.position.set( this.cameraControls.DEFAULT_LOOKAT_POSITION.x, 0, -3 )
+        this.mesh.material.uniforms.u_opacity.value = this.math.fit( this.properties.startTime, 0, 2, .3, 1 )
+        this.mesh.material.uniforms.u_color1.value.setStyle( this.colorHex1 ).convertSRGBToLinear()
+        this.mesh.material.uniforms.u_color2.value.setStyle( this.colorHex2 ).convertSRGBToLinear()
+        this.mesh.material.uniforms.u_color3.value.setStyle( this.colorHex3 ).convertSRGBToLinear()
     }
 }

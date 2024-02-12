@@ -11,9 +11,8 @@ export default class Particles {
     container = new THREE.Object3D;
     particlesMesh;
     particlesGeometry;
-    tetsGeometry;
     particleSize = .0125;
-    hasInitialized = !0;
+    hasInitialized = false;
 
     constructor() {
         this.experience = new Experience()
@@ -38,35 +37,60 @@ export default class Particles {
 
     init() {
         this.particlesSim.init();
-        const e = this.particlesSim.textureSize.x, t = this.particlesSim.textureSize.y, i = this.particlesSim.particleCount,
-            n = this.particlesGeometry, r = new THREE.InstancedBufferGeometry;
-        r.index = n.index;
-        for (let u in n.attributes) r.setAttribute(u, n.attributes[u]);
-        const a = new Float32Array(i * 2);
-        for (let u = 0, c = 0; u < i; u++, c += 2) a[c] = (u % e + .5) / e, a[c + 1] = (Math.floor(u / e) + .5) / t;
-        let l = this.properties.pointsGeometry.attributes.dist.array;
-        r.setAttribute("a_simUv", new THREE.InstancedBufferAttribute(a, 2)), r.setAttribute("a_dist", new THREE.InstancedBufferAttribute(l, 1)), this.particlesMesh = new THREE.Mesh(r, new THREE.ShaderMaterial({
-            uniforms: Object.assign({
+        const textureSizeX = this.particlesSim.textureSize.x, // e
+            textureSizeY = this.particlesSim.textureSize.y, // t
+            particleCount = this.particlesSim.particleCount, // i
+            particlesGeometry = this.particlesGeometry, // n
+            instancedBufferGeometry = new THREE.InstancedBufferGeometry; // r
+
+        instancedBufferGeometry.index = particlesGeometry.index;
+
+        for ( let attr in particlesGeometry.attributes ) {
+            instancedBufferGeometry.setAttribute( attr, particlesGeometry.attributes[ attr ] );
+        }
+
+        const dataSimUv = new Float32Array( particleCount * 2 ); // a
+        for ( let i = 0, j = 0; i < particleCount; i++, j += 2 ) {
+            dataSimUv[ j ] = ( i % textureSizeX + .5 ) / textureSizeX
+            dataSimUv[ j + 1 ] = ( Math.floor( i / textureSizeX ) + .5 ) / textureSizeY;
+        }
+
+        let dataDist = this.properties.pointsGeometry.attributes.dist.array; // l
+        instancedBufferGeometry.setAttribute( "a_simUv", new THREE.InstancedBufferAttribute( dataSimUv, 2 ) )
+        instancedBufferGeometry.setAttribute( "a_dist", new THREE.InstancedBufferAttribute( dataDist, 1 ) )
+
+        this.particlesMesh = new THREE.Mesh( instancedBufferGeometry, new THREE.ShaderMaterial( {
+            uniforms: Object.assign( {
                 u_time: this.properties.sharedUniforms.u_time,
                 u_currPositionLifeTexture: this.particlesSim.sharedUniforms.u_currPositionLifeTexture,
                 u_currVelocityDistTexture: this.particlesSim.sharedUniforms.u_currVelocityDistTexture,
-                u_particleSize: {value: this.particleSize},
-                u_color: {value: new THREE.Color(this.properties.heroColorHex)}
-            }, this.lightField.sharedUniforms), vertexShader: vert, fragmentShader: frag
-        })), this.particlesMesh.renderOrder = 1, this.particlesMesh.frustumCulled = !1, this.container.add(this.particlesMesh), this._initLightFieldMesh(a, l), this.hasInitialized = !0
+                u_particleSize: { value: this.particleSize },
+                u_color: { value: new THREE.Color( this.properties.heroColorHex ) }
+            }, this.lightField.sharedUniforms ),
+            vertexShader: vert,
+            fragmentShader: frag
+        } ) )
+
+        this.particlesMesh.renderOrder = 1
+        this.particlesMesh.frustumCulled = false
+        this.container.add( this.particlesMesh )
+        this._initLightFieldMesh( dataSimUv, dataDist )
+        this.hasInitialized = true
     }
 
-    _initLightFieldMesh(e, t) {
-        let i = new THREE.BufferGeometry;
-        i.computeBoundingSphere()
+    _initLightFieldMesh( dataPosition, dataDist ) {
+        let geometry = new THREE.BufferGeometry;
+        geometry.computeBoundingSphere()
 
-        i.setAttribute("position", new THREE.BufferAttribute(e, 2)), i.setAttribute("dist", new THREE.BufferAttribute(t, 1)), this.lightFieldParticles = new THREE.Points(i, this.fboHelper.createRawShaderMaterial({
-            uniforms: Object.assign({
+        geometry.setAttribute( "position", new THREE.BufferAttribute( dataPosition, 2 ) )
+        geometry.setAttribute( "dist", new THREE.BufferAttribute( dataDist, 1 ) )
+        this.lightFieldParticles = new THREE.Points( geometry, this.fboHelper.createRawShaderMaterial( {
+            uniforms: Object.assign( {
                 u_time: this.properties.sharedUniforms.u_time,
                 u_currPositionLifeTexture: this.particlesSim.sharedUniforms.u_currPositionLifeTexture,
                 u_currVelocityDistTexture: this.particlesSim.sharedUniforms.u_currVelocityDistTexture,
-                u_color: {value: new THREE.Color(this.properties.heroColorHex)}
-            }, this.lightField.sharedUniforms),
+                u_color: { value: new THREE.Color( this.properties.heroColorHex ) }
+            }, this.lightField.sharedUniforms ),
             vertexShader: LightfieldVert,
             fragmentShader: LightfieldFrag,
             blending: THREE.CustomBlending,
@@ -76,14 +100,19 @@ export default class Particles {
             blendEquationAlpha: THREE.MaxEquation,
             blendDstAlpha: THREE.OneFactor,
             blendSrcAlpha: THREE.OneFactor
-        })), this.lightFieldParticles.frustumCulled = !1
+        } ) )
+
+        this.lightFieldParticles.frustumCulled = false
     }
 
-    resize(e, t) {
+    resize( width, height ) {
     }
 
-    update(e) {
-        this.hasInitialized && (this.particlesSim.update(e), this.lightField.renderMesh(this.lightFieldParticles))
+    update( delta ) {
+        if( this.hasInitialized ) {
+            this.particlesSim.update( delta )
+            this.lightField.renderMesh( this.lightFieldParticles )
+        }
     }
 
 }

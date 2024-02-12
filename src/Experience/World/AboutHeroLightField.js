@@ -4,9 +4,9 @@ import Experience from '../Experience.js'
 import sliceBlendFrag from '../Shaders/AboutHeroLightField/sliceBlendFrag.glsl'
 
 export default class AboutHeroLightField {
-    GRID_COUNT = new THREE.Vector3(64, 64, 32);
-    ORIGIN = new THREE.Vector3(0, 0, 0);
-    VOLUME_SIZE = new THREE.Vector3(2, 0, 0);
+    GRID_COUNT = new THREE.Vector3( 64, 64, 32 );
+    ORIGIN = new THREE.Vector3( 0, 0, 0 );
+    VOLUME_SIZE = new THREE.Vector3( 2, 0, 0 );
     container = new THREE.Object3D;
     prevSliceRenderTarget = null;
     currSliceRenderTarget = null;
@@ -44,28 +44,28 @@ export default class AboutHeroLightField {
     }
 
     init() {
-        this.gridSize = this.VOLUME_SIZE.x / (this.GRID_COUNT.x - 1)
+        this.gridSize = this.VOLUME_SIZE.x / ( this.GRID_COUNT.x - 1 )
         this.sharedUniforms.u_lightFieldGridSize.value = this.gridSize
-        this.VOLUME_SIZE.y = this.gridSize * (this.GRID_COUNT.y - 1)
-        this.VOLUME_SIZE.z = this.gridSize * (this.GRID_COUNT.z - 1)
-        this.sharedUniforms.u_lightFieldVolumeSize.value.setScalar(this.gridSize).add(this.VOLUME_SIZE)
-        this.sharedUniforms.u_lightFieldMaxLod.value = Math.log2(Math.min(this.GRID_COUNT.x, this.GRID_COUNT.y, this.GRID_COUNT.z))
+        this.VOLUME_SIZE.y = this.gridSize * ( this.GRID_COUNT.y - 1 )
+        this.VOLUME_SIZE.z = this.gridSize * ( this.GRID_COUNT.z - 1 )
+        this.sharedUniforms.u_lightFieldVolumeSize.value.setScalar( this.gridSize ).add( this.VOLUME_SIZE )
+        this.sharedUniforms.u_lightFieldMaxLod.value = Math.log2( Math.min( this.GRID_COUNT.x, this.GRID_COUNT.y, this.GRID_COUNT.z ) )
 
         let totalCells = this.GRID_COUNT.x * this.GRID_COUNT.y * this.GRID_COUNT.z
-        let sliceColumnCount = this.sliceColumnCount = Math.ceil(Math.sqrt(totalCells) / this.GRID_COUNT.x)
-        let sliceRowCount = this.sliceRowCount = Math.ceil(this.GRID_COUNT.z / sliceColumnCount)
+        let sliceColumnCount = this.sliceColumnCount = Math.ceil( Math.sqrt( totalCells ) / this.GRID_COUNT.x )
+        let sliceRowCount = this.sliceRowCount = Math.ceil( this.GRID_COUNT.z / sliceColumnCount )
 
-        this.sharedUniforms.u_lightFieldSliceColRowCount.value.set(sliceColumnCount, sliceRowCount);
+        this.sharedUniforms.u_lightFieldSliceColRowCount.value.set( sliceColumnCount, sliceRowCount );
         let gridCountX = this.GRID_COUNT.x * sliceColumnCount
         let gridCountY = this.GRID_COUNT.y * sliceRowCount
 
-        this.sharedUniforms.u_lightFieldSlicedTextureSize.value.set(gridCountX, gridCountY)
-        this.currSliceRenderTarget = this.fboHelper.createRenderTarget(gridCountX, gridCountY)
+        this.sharedUniforms.u_lightFieldSlicedTextureSize.value.set( gridCountX, gridCountY )
+        this.currSliceRenderTarget = this.fboHelper.createRenderTarget( gridCountX, gridCountY )
         this.prevSliceRenderTarget = this.currSliceRenderTarget.clone()
         this.drawnSliceRenderTarget = this.currSliceRenderTarget.clone()
-        this.fboHelper.clearColor(0, 0, 0, 0, this.currSliceRenderTarget)
+        this.fboHelper.clearColor( 0, 0, 0, 0, this.currSliceRenderTarget )
 
-        this.sliceBlendMaterial = this.fboHelper.createRawShaderMaterial({
+        this.sliceBlendMaterial = this.fboHelper.createRawShaderMaterial( {
             uniforms: {
                 u_lightFieldSlicedTextureSize: this.sharedUniforms.u_lightFieldSlicedTextureSize,
                 u_lightFieldSliceColRowCount: this.sharedUniforms.u_lightFieldSliceColRowCount,
@@ -75,36 +75,36 @@ export default class AboutHeroLightField {
                 u_prevSliceTexture: { value: null },
                 u_drawnSliceTexture: { value: this.drawnSliceRenderTarget.texture }
             }, fragmentShader: sliceBlendFrag
-        })
+        } )
     }
 
-    update(delta) {
-        let lightFieldCenterOffset = this.VOLUME_SIZE.clone().multiplyScalar(.5).sub(this.ORIGIN).multiplyScalar(-1);
-        this.sharedUniforms.u_lightFieldVolumeOffset.value.setScalar(-this.gridSize / 2).add(lightFieldCenterOffset);
+    update( delta ) {
+        let lightFieldCenterOffset = this.VOLUME_SIZE.clone().multiplyScalar( .5 ).sub( this.ORIGIN ).multiplyScalar( -1 );
+        this.sharedUniforms.u_lightFieldVolumeOffset.value.setScalar( -this.gridSize / 2 ).add( lightFieldCenterOffset );
 
         let renderer = this.properties.renderer
         let currentColorState = this.fboHelper.getColorState()
         let currentRenderTarget = renderer.getRenderTarget()
 
-        renderer.setRenderTarget(this.drawnSliceRenderTarget)
-        renderer.setClearColor(0, 0)
+        renderer.setRenderTarget( this.drawnSliceRenderTarget )
+        renderer.setClearColor( 0, 0 )
         renderer.clear()
-        renderer.setRenderTarget(currentRenderTarget)
-        this.fboHelper.setColorState(currentColorState)
+        renderer.setRenderTarget( currentRenderTarget )
+        this.fboHelper.setColorState( currentColorState )
     }
 
-    renderMesh(delta) {
+    renderMesh( delta ) {
         let renderer = this.properties.renderer
         let currentColorState = this.fboHelper.getColorState()
         let currentRenderTarget = renderer.getRenderTarget()
 
         renderer.autoClearColor = false
-        this.fboHelper.renderMesh(delta, this.drawnSliceRenderTarget)
-        renderer.setRenderTarget(currentRenderTarget)
-        this.fboHelper.setColorState(currentColorState)
+        this.fboHelper.renderMesh( delta, this.drawnSliceRenderTarget )
+        renderer.setRenderTarget( currentRenderTarget )
+        this.fboHelper.setColorState( currentColorState )
     }
 
-    postUpdate(delta) {
+    postUpdate( delta ) {
         let renderer = this.properties.renderer
         let currentColorState = this.fboHelper.getColorState()
         let currentRenderTarget = renderer.getRenderTarget()
@@ -117,9 +117,9 @@ export default class AboutHeroLightField {
         this.currSliceRenderTarget = prevSliceRenderTarget
         this.sharedUniforms.u_lightFieldSlicedTexture.value = this.currSliceRenderTarget.texture
         this.sliceBlendMaterial.uniforms.u_prevSliceTexture.value = this.prevSliceRenderTarget.texture
-        this.fboHelper.render(this.sliceBlendMaterial, this.currSliceRenderTarget)
-        renderer.setRenderTarget(currentRenderTarget)
-        this.fboHelper.setColorState(currentColorState)
+        this.fboHelper.render( this.sliceBlendMaterial, this.currSliceRenderTarget )
+        renderer.setRenderTarget( currentRenderTarget )
+        this.fboHelper.setColorState( currentColorState )
     }
 
 }

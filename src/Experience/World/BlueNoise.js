@@ -38,10 +38,10 @@ export default class BlueNoise {
         ldrTexture.wrapS = ldrTexture.wrapT = THREE.RepeatWrapping
         this.sharedUniforms.u_blueNoiseTexture.value = ldrTexture
         this.sharedUniforms.u_blueNoiseLinearTexture.value = texture
-        this.sharedUniforms.u_blueNoiseTexelSize.value = new THREE.Vector2(1 / this.TEXTURE_SIZE, 1 / this.TEXTURE_SIZE)
+        this.sharedUniforms.u_blueNoiseTexelSize.value = new THREE.Vector2( 1 / this.TEXTURE_SIZE, 1 / this.TEXTURE_SIZE )
     }
 
-    update(delta) {
-        this.sharedUniforms.u_blueNoiseCoordOffset.value.set(Math.random(), Math.random())
+    update( delta ) {
+        this.sharedUniforms.u_blueNoiseCoordOffset.value.set( Math.random(), Math.random() )
     }
 }
