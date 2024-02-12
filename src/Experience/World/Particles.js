@@ -58,6 +58,8 @@ export default class Particles {
 
     _initLightFieldMesh(e, t) {
         let i = new THREE.BufferGeometry;
+        i.computeBoundingSphere()
+
         i.setAttribute("position", new THREE.BufferAttribute(e, 2)), i.setAttribute("dist", new THREE.BufferAttribute(t, 1)), this.lightFieldParticles = new THREE.Points(i, this.fboHelper.createRawShaderMaterial({
             uniforms: Object.assign({
                 u_time: this.properties.sharedUniforms.u_time,

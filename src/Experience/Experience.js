@@ -47,7 +47,7 @@ export default class Experience
         this.resources = new Resources(sources)
 
         // Options
-        //THREE.ColorManagement.enabled = false
+        THREE.ColorManagement.enabled = false
         this.canvas = _canvas
 
         // Setup

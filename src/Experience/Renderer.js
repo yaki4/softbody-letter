@@ -42,7 +42,7 @@ export default class Renderer
             //physicallyCorrectLights: true,
         })
 
-        //this.instance.outputColorSpace = THREE.SRGBColorSpace
+        this.instance.outputColorSpace = THREE.LinearSRGBColorSpace
         //this.instance.encoding = THREE.LinearEncoding
 
         this.instance.setSize(this.sizes.width, this.sizes.height)
@@ -119,7 +119,7 @@ export default class Renderer
                 minFilter: THREE.LinearFilter,
                 magFilter: THREE.LinearFilter,
                 format: THREE.RGBAFormat,
-                colorSpace: THREE.SRGBColorSpace,
+                colorSpace: THREE.LinearSRGBColorSpace,
                 samples: this.instance.getPixelRatio() === 1 ? 2 : 0
             }
         )
