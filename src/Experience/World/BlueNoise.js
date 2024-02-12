@@ -29,13 +29,6 @@ export default class BlueNoise {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping
         texture.needsUpdate = true
 
-        // let t = new Texture(properties.loader.add(settings.TEXTURE_PATH + "LDR_RGB1_0.png", {
-        //     weight: 55,
-        //     onLoad: function () {
-        //         t.needsUpdate = !0, e.needsUpdate = !0
-        //     }
-        // }).content);
-
         let ldrTexture = this.resources.items.LDRTexture
         ldrTexture.needsUpdate = true
 
@@ -48,7 +41,7 @@ export default class BlueNoise {
         this.sharedUniforms.u_blueNoiseTexelSize.value = new THREE.Vector2(1 / this.TEXTURE_SIZE, 1 / this.TEXTURE_SIZE)
     }
 
-    update(e) {
+    update(delta) {
         this.sharedUniforms.u_blueNoiseCoordOffset.value.set(Math.random(), Math.random())
     }
 }
