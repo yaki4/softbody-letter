@@ -37,11 +37,12 @@ export default class Particles {
 
     init() {
         this.particlesSim.init();
-        const textureSizeX = this.particlesSim.textureSize.x, // e
-            textureSizeY = this.particlesSim.textureSize.y, // t
-            particleCount = this.particlesSim.particleCount, // i
-            particlesGeometry = this.particlesGeometry, // n
-            instancedBufferGeometry = new THREE.InstancedBufferGeometry; // r
+
+        const textureSizeX = this.particlesSim.textureSize.x
+        const textureSizeY = this.particlesSim.textureSize.y
+        const particleCount = this.particlesSim.particleCount
+        const particlesGeometry = this.particlesGeometry
+        const instancedBufferGeometry = new THREE.InstancedBufferGeometry
 
         instancedBufferGeometry.index = particlesGeometry.index;
 
