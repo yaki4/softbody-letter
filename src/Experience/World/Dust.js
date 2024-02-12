@@ -44,27 +44,27 @@ export default class Dust {
 
         const dataPosition = new Float32Array(PARTICLE_COUNT * 3);
 
-        for (let r = 0, a = 0; r < PARTICLE_COUNT; r++, a += 3){
-            dataPosition[a    ] = 4 * (Math.random() - .5)
-            dataPosition[a + 1] = 4 * Math.random() - 1
-            dataPosition[a + 2] = .5 - 3.5 * Math.random();
+        for (let i = 0, j = 0; i < PARTICLE_COUNT; i++, j += 3){
+            dataPosition[j    ] = 4 * (Math.random() - .5)
+            dataPosition[j + 1] = 4 * Math.random() - 1
+            dataPosition[j + 2] = .5 - 3.5 * Math.random();
         }
 
         const dataRandom = new Float32Array(PARTICLE_COUNT * 4);
-        for (let r = 0, a = 0; r < PARTICLE_COUNT; r++) {
-            dataRandom[a    ] = Math.random()
-            dataRandom[a + 1] = Math.random()
-            dataRandom[a + 2] = Math.random()
-            dataRandom[a + 3] = Math.random()
-            a += 4;
+        for (let i = 0, j = 0; i < PARTICLE_COUNT; i++) {
+            dataRandom[j    ] = Math.random()
+            dataRandom[j + 1] = Math.random()
+            dataRandom[j + 2] = Math.random()
+            dataRandom[j + 3] = Math.random()
+            j += 4;
         }
 
         const planeGeometry = new THREE.PlaneGeometry(1, 1, 1, 1)
         const InstancedGeometry = new THREE.InstancedBufferGeometry;
         InstancedGeometry.index = planeGeometry.index;
 
-        for (let r in planeGeometry.attributes) {
-            InstancedGeometry.setAttribute(r, planeGeometry.attributes[r]);
+        for (let attr in planeGeometry.attributes) {
+            InstancedGeometry.setAttribute(attr, planeGeometry.attributes[attr]);
         }
 
         InstancedGeometry.setAttribute("a_instancePosition", new THREE.InstancedBufferAttribute(dataPosition, 3))

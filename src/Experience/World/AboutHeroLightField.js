@@ -105,9 +105,9 @@ export default class AboutHeroLightField {
     }
 
     postUpdate(delta) {
-        let renderer = this.properties.renderer //t
-        let currentColorState = this.fboHelper.getColorState() //i
-        let currentRenderTarget = renderer.getRenderTarget() //n
+        let renderer = this.properties.renderer
+        let currentColorState = this.fboHelper.getColorState()
+        let currentRenderTarget = renderer.getRenderTarget()
 
         /*this.properties.gl, */
         renderer.autoClear = false;
