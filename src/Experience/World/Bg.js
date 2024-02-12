@@ -9,7 +9,6 @@ export default class Bg {
     colorHex1 = "#635e62";
     colorHex2 = "#334d93";
     colorHex3 = "#fc813d";
-    DEFAULT_LOOKAT_POSITION = new THREE.Vector3(.455, 0, 0)
 
     constructor() {
         this.experience = new Experience()
@@ -22,6 +21,7 @@ export default class Bg {
         this.properties = this.experience.world.properties
         this.blueNoise = this.experience.world.blueNoise
         this.math = this.experience.world.math
+        this.cameraControls = this.experience.world.cameraControls
 
         this.preInit()
     }
@@ -71,9 +71,8 @@ export default class Bg {
     resize(e, t) {
     }
 
-    update(e) {
-        //this.mesh.position.set(cameraControls.DEFAULT_LOOKAT_POSITION.x, 0, -3)
-        this.mesh.position.set(this.DEFAULT_LOOKAT_POSITION.x, 0, -3)
+    update(delta) {
+        this.mesh.position.set(this.cameraControls.DEFAULT_LOOKAT_POSITION.x, 0, -3)
         this.mesh.material.uniforms.u_opacity.value = this.math.fit(this.properties.startTime, 0, 2, .3, 1)
         this.mesh.material.uniforms.u_color1.value.setStyle(this.colorHex1).convertSRGBToLinear()
         this.mesh.material.uniforms.u_color2.value.setStyle(this.colorHex2).convertSRGBToLinear()

@@ -3,7 +3,7 @@ import Experience from '../Experience.js'
 
 export default class SoftBody {
     container = new THREE.Object3D;
-    numSubsteps = 6;
+    numSubsteps = 0.4;
     interactiveRatio = 6;
     interactivePattern = 0;
     prevStartTime = 0;
