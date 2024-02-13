@@ -5,157 +5,209 @@ export default class MathUtils {
     DEG2RAD = this.PI / 180;
     RAD2DEG = 180 / this.PI;
 
-    step(e, t) {
-        return t < e ? 0 : 1
+    step( threshold, value ) {
+        return value < threshold ? 0 : 1;
     }
 
-    clamp(e, t, i) {
-        return e < t ? t : e > i ? i : e
+    clamp( value, min, max ) {
+        return value < min ? min : value > max ? max : value;
     }
 
-    mix(e, t, i) {
-        return e + (t - e) * i
+    mix( start, end, factor ) {
+        return start + ( end - start ) * factor;
     }
 
-    cMix(e, t, i) {
-        return e + (t - e) * this.clamp(i, 0, 1)
+    cMix( start, end, factor ) {
+        return start + ( end - start ) * this.clamp( factor, 0, 1 );
     }
 
-    unMix(e, t, i) {
-        return (i - e) / (t - e)
+    unMix( start, end, value ) {
+        return ( value - start ) / ( end - start );
     }
 
-    cUnMix(e, t, i) {
-        return this.clamp((i - e) / (t - e), 0, 1)
+    cUnMix( start, end, value ) {
+        return this.clamp( ( value - start ) / ( end - start ), 0, 1 );
     }
 
-    saturate(e) {
-        return this.clamp(e, 0, 1)
+    saturate( value ) {
+        return this.clamp( value, 0, 1 );
     }
 
-    fit(e, t, i, n, r, a) {
-        return e = this.cUnMix(t, i, e), a && (e = a(e)), n + e * (r - n)
-    }
+    fit( value, startRange1, endRange1, startRange2, endRange2, transformFunc = null ) {
+        let normalizedValue = this.cUnMix( startRange1, endRange1, value );
 
-    unClampedFit(e, t, i, n, r, a) {
-        return e = this.unMix(t, i, e), a && (e = a(e)), n + e * (r - n)
-    }
-
-    loop(e, t, i) {
-        return e -= t, i -= t, (e < 0 ? (i - Math.abs(e) % i) % i : e % i) + t
-    }
-
-    normalize(e, t, i) {
-        return Math.max(0, Math.min(1, e - t / i - t))
-    }
-
-    smoothstep(e, t, i) {
-        return i = this.cUnMix(e, t, i), i * i * (3 - i * 2)
-    }
-
-    fract(e) {
-        return e - Math.floor(e)
-    }
-
-    hash(e) {
-        return this.fract(Math.sin(e) * 43758.5453123)
-    }
-
-    hash2(e, t) {
-        return this.fract(Math.sin(e * 12.9898 + t * 4.1414) * 43758.5453)
-    }
-
-    sign(e) {
-        return e ? e < 0 ? -1 : 1 : 0
-    }
-
-    isPowerOfTwo(e) {
-        return (e & -e) === e
-    }
-
-    powerTwoCeilingBase(e) {
-        return Math.ceil(Math.log(e) / Math.log(2))
-    }
-
-    powerTwoCeiling(e) {
-        return this.isPowerOfTwo(e) ? e : 1 << this.powerTwoCeilingBase(e)
-    }
-
-    powerTwoFloorBase(e) {
-        return Math.floor(Math.log(e) / Math.log(2))
-    }
-
-    powerTwoFloor(e) {
-        return this.isPowerOfTwo(e) ? e : 1 << this.powerTwoFloorBase(e)
-    }
-
-    lerp(e, t, i) {
-        return e + i * (t - e)
-    }
-
-    latLngBearing(e, t, i, n) {
-        let r = Math.sin(n - t) * Math.cos(i),
-            a = Math.cos(e) * Math.sin(i) - Math.sin(e) * Math.cos(i) * Math.cos(n - t);
-        return Math.atan2(r, a)
-    }
-
-    distanceTo(e, t) {
-        return Math.sqrt(e * e + t * t)
-    }
-
-    distanceSqrTo(e, t) {
-        return e * e + t * t
-    }
-
-    distanceTo3(e, t, i) {
-        return Math.sqrt(e * e + t * t + i * i)
-    }
-
-    distanceSqrTo3(e, t, i) {
-        return e * e + t * t + i * i
-    }
-
-    latLngDistance(e, t, i, n) {
-        let r = Math.sin((i - e) / 2), a = Math.sin((n - t) / 2), l = r * r + Math.cos(e) * Math.cos(i) * a * a;
-        return 2 * Math.atan2(Math.sqrt(l), Math.sqrt(1 - l))
-    }
-
-    cubicBezier(e, t, i, n, r) {
-        let a = (t - e) * 3, l = (i - t) * 3 - a, u = n - e - a - l, c = r * r, f = c * r;
-        return u * f + l * c + a * r + e
-    }
-
-    cubicBezierFn(e, t, i, n) {
-        let r = (t - e) * 3, a = (i - t) * 3 - r, l = n - e - r - a;
-        return u => {
-            let c = u * u, f = c * u;
-            return l * f + a * c + r * u + e
+        if ( transformFunc ) {
+            normalizedValue = transformFunc( normalizedValue );
         }
+
+        return startRange2 + normalizedValue * ( endRange2 - startRange2 );
     }
 
-    normalizeAngle(e) {
-        return e += this.PI, e = e < 0 ? this.PI2 - Math.abs(e % PI2) : e % this.PI2, e -= this.PI, e
+    unClampedFit( value, startRange1, endRange1, startRange2, endRange2, transformFunc = null ) {
+        let normalizedValue = this.unMix( startRange1, endRange1, value );
+
+        if ( transformFunc ) {
+            normalizedValue = transformFunc( normalizedValue );
+        }
+
+        return startRange2 + normalizedValue * ( endRange2 - startRange2 );
     }
 
-    closestAngleTo(e, t) {
-        return e + this.normalizeAngle(t - e)
+    loop( value, start, end ) {
+        value -= start;
+        let range = end - start;
+
+        return ( value < 0 ? ( range - Math.abs( value ) % range ) % range : value % range ) + start;
     }
 
-    randomRange(e, t) {
-        return e + Math.random() * (t - e)
+    normalize( value, min, range ) {
+        return Math.max( 0, Math.min( 1, ( value - min ) / range ) );
     }
 
-    randomRangeInt(e, t) {
-        return Math.floor(this.randomRange(e, t + 1))
+    smoothstep( min, max, value ) {
+        value = this.cUnMix( min, max, value );
+
+        return value * value * ( 3 - 2 * value );
     }
 
-    padZero(e, t) {
-        return e.toString().length >= t ? e : (Math.pow(10, t) + Math.floor(e)).toString().substring(1)
+    fract( value ) {
+        return value - Math.floor( value );
     }
 
-    getSeedRandomFn(e) {
-        let t = 1779033703, i = 3144134277, n = 1013904242, r = 2773480762;
-        for (let a = 0, l; a < e.length; a++) l = e.charCodeAt(a), t = i ^ Math.imul(t ^ l, 597399067), i = n ^ Math.imul(i ^ l, 2869860233), n = r ^ Math.imul(n ^ l, 951274213), r = t ^ Math.imul(r ^ l, 2716044179);
-        return _sfc32(Math.imul(n ^ t >>> 18, 597399067), Math.imul(r ^ i >>> 22, 2869860233), Math.imul(t ^ n >>> 17, 951274213), Math.imul(i ^ r >>> 19, 2716044179))
+    hash( value ) {
+        return this.fract( Math.sin( value ) * 43758.5453123 );
     }
+
+    hash2( x, y ) {
+        return this.fract( Math.sin( x * 12.9898 + y * 4.1414 ) * 43758.5453 );
+    }
+
+    sign( value ) {
+        return value ? ( value < 0 ? -1 : 1 ) : 0;
+    }
+
+    isPowerOfTwo( value ) {
+        return ( value & -value ) === value;
+    }
+
+    powerTwoCeilingBase( value ) {
+        return Math.ceil( Math.log( value ) / Math.log( 2 ) );
+    }
+
+    powerTwoCeiling( value ) {
+        return this.isPowerOfTwo( value ) ? value : 1 << this.powerTwoCeilingBase( value );
+    }
+
+    powerTwoFloorBase( value ) {
+        return Math.floor( Math.log( value ) / Math.log( 2 ) );
+    }
+
+    powerTwoFloor( value ) {
+        return this.isPowerOfTwo( value ) ? value : 1 << this.powerTwoFloorBase( value );
+    }
+
+    lerp( start, end, factor ) {
+        return start + factor * ( end - start );
+    }
+
+    latLngBearing( startLat, startLng, destLat, destLng ) {
+        let dLng = destLng - startLng;
+
+        let y = Math.sin( dLng ) * Math.cos( destLat );
+        let x = Math.cos( startLat ) * Math.sin( destLat ) - Math.sin( startLat ) * Math.cos( destLat ) * Math.cos( dLng );
+
+        return Math.atan2( y, x );
+    }
+
+    distanceTo( x, y ) {
+        return Math.sqrt( x * x + y * y );
+    }
+
+    distanceSqrTo( x, y ) {
+        return x * x + y * y;
+    }
+
+    distanceTo3( x, y, z ) {
+        return Math.sqrt( x * x + y * y + z * z );
+    }
+
+    distanceSqrTo3( x, y, z ) {
+        return x * x + y * y + z * z;
+    }
+
+    latLngDistance( lat1, lng1, lat2, lng2 ) {
+        let dLat = Math.sin( ( lat2 - lat1 ) / 2 );
+        let dLng = Math.sin( ( lng2 - lng1 ) / 2 );
+        let a = dLat * dLat + Math.cos( lat1 ) * Math.cos( lat2 ) * dLng * dLng;
+        return 2 * Math.atan2( Math.sqrt( a ), Math.sqrt( 1 - a ) );
+    }
+
+    cubicBezier( p0, p1, p2, p3, t ) {
+        let a = ( p1 - p0 ) * 3;
+        let b = ( p2 - p1 ) * 3 - a;
+        let c = p3 - p0 - a - b;
+        let tSquared = t * t;
+        let tCubed = tSquared * t;
+        return c * tCubed + b * tSquared + a * t + p0;
+    }
+
+    cubicBezierFn( p0, p1, p2, p3 ) {
+        let a = ( p1 - p0 ) * 3;
+        let b = ( p2 - p1 ) * 3 - a;
+        let c = p3 - p0 - a - b;
+        return t => {
+            let tSquared = t * t;
+            let tCubed = tSquared * t;
+            return c * tCubed + b * tSquared + a * t + p0;
+        };
+    }
+
+    normalizeAngle( angle ) {
+        angle += Math.PI;
+        angle = angle < 0 ? 2 * Math.PI - Math.abs( angle % ( 2 * Math.PI ) ) : angle % ( 2 * Math.PI );
+        angle -= Math.PI;
+        return angle;
+    }
+
+    closestAngleTo( currentAngle, targetAngle ) {
+        return currentAngle + this.normalizeAngle( targetAngle - currentAngle );
+    }
+
+    randomRange( min, max ) {
+        return min + Math.random() * ( max - min );
+    }
+
+    randomRangeInt( min, max ) {
+        return Math.floor( this.randomRange( min, max + 1 ) );
+    }
+
+    padZero( number, length ) {
+        return number.toString().length >= length ? number.toString() : ( '1'.repeat( length ) + Math.floor( number ) ).slice( -length );
+    }
+
+    getSeedRandomFn( seed ) {
+        let seed1 = 1779033703, seed2 = 3144134277, seed3 = 1013904242, seed4 = 2773480762;
+        for ( let i = 0, charCode; i < seed.length; i++ ) {
+            charCode = seed.charCodeAt( i );
+            seed1 = seed2 ^ Math.imul( seed1 ^ charCode, 597399067 );
+            seed2 = seed3 ^ Math.imul( seed2 ^ charCode, 2869860233 );
+            seed3 = seed4 ^ Math.imul( seed3 ^ charCode, 951274213 );
+            seed4 = seed1 ^ Math.imul( seed4 ^ charCode, 2716044179 );
+        }
+        return () => {
+            seed1 >>>= 0;
+            seed2 >>>= 0;
+            seed3 >>>= 0;
+            seed4 >>>= 0;
+            let t = ( seed1 + seed2 ) | 0;
+            seed1 = seed2 ^ seed2 >>> 9;
+            seed2 = seed3 + ( seed3 << 3 ) | 0;
+            seed3 = ( seed3 << 21 | seed3 >>> 11 );
+            seed4 = seed4 + 1 | 0;
+            t = t + seed4 | 0;
+            seed3 = seed3 + t | 0;
+            return ( t >>> 0 ) / 4294967296;
+        };
+    }
+
 }

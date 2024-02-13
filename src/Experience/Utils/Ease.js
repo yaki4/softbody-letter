@@ -125,19 +125,50 @@ export default class Ease   {
         return e < .5 ? this.bounceIn(e * 2) * .5 : this.bounceOut(e * 2 - 1) * .5 + .5
     }
 
-    cubicBezier(e, t, i, n, r) {
-        if (e <= 0) return 0;
-        if (e >= 1) return 1;
-        if (t === i && n === r) return e;
-        const a = (O, B, G, J) => 1 / (3 * B * O * O + 2 * G * O + J),
-            l = (O, B, G, J, Y) => B * (O * O * O) + G * (O * O) + J * O + Y, u = (O, B, G, J, Y) => {
-                let W = O * O;
-                return B * (W * O) + G * W + J * O + Y
-            };
-        let c = 0, f = 0, p = t, _ = i, v = n, S = r, g = 1, x = 1, M = g - 3 * v + 3 * p - c,
-            A = 3 * v - 6 * p + 3 * c, b = 3 * p - 3 * c, w = c, C = x - 3 * S + 3 * _ - f, P = 3 * S - 6 * _ + 3 * f,
-            E = 3 * _ - 3 * f, T = f, L = e, F, k, q;
-        for (F = 0; F < 100; F++) k = l(L, M, A, b, w), q = a(L, M, A, b), q === 1 / 0 && (q = e), L -= (k - e) * q, L = Math.min(Math.max(L, 0), 1);
-        return u(L, C, P, E, T)
+    cubicBezier(progress, startControlX, startControlY, endControlX, endControlY) {
+        if (progress <= 0) return 0;
+        if (progress >= 1) return 1;
+        if (startControlX === startControlY && endControlX === endControlY) return progress;
+
+        const derivative = (param, coeff1, coeff2, coeff3) => 1 / (3 * coeff1 * param * param + 2 * coeff2 * param + coeff3);
+        const bezierValue = (param, coeff1, coeff2, coeff3, coeff4) => coeff1 * (param * param * param) + coeff2 * (param * param) + coeff3 * param + coeff4;
+        const cubicBezierCalc = (param, coeff1, coeff2, coeff3, coeff4) => {
+            let paramSquared = param * param;
+            return coeff1 * (paramSquared * param) + coeff2 * paramSquared + coeff3 * param + coeff4;
+        };
+
+        let startX = 0, startY = 0, control1X = startControlX, control1Y = startControlY, control2X = endControlX, control2Y = endControlY;
+        let endX = 1, endY = 1;
+        let coeffAX = endX - 3 * control2X + 3 * control1X - startX, coeffBX = 3 * control2X - 6 * control1X + 3 * startX;
+        let coeffCX = 3 * control1X - 3 * startX, coeffDX = startX;
+        let coeffAY = endY - 3 * control2Y + 3 * control1Y - startY, coeffBY = 3 * control2Y - 6 * control1Y + 3 * startY;
+        let coeffCY = 3 * control1Y - 3 * startY, coeffDY = startY;
+        let currentProgress = progress, bezierResult, newDerivative, newProgress;
+
+        for (let iteration = 0; iteration < 100; iteration++) {
+            bezierResult = bezierValue(currentProgress, coeffAX, coeffBX, coeffCX, coeffDX);
+            newDerivative = derivative(currentProgress, coeffAX, coeffBX, coeffCX);
+            if (newDerivative === Infinity) newDerivative = progress;
+            currentProgress -= (bezierResult - progress) * newDerivative;
+            currentProgress = Math.min(Math.max(currentProgress, 0), 1);
+        }
+
+        return cubicBezierCalc(currentProgress, coeffAY, coeffBY, coeffCY, coeffDY);
     }
+
+    // cubicBezier(e, t, i, n, r) {
+    //     if (e <= 0) return 0;
+    //     if (e >= 1) return 1;
+    //     if (t === i && n === r) return e;
+    //     const a = (O, B, G, J) => 1 / (3 * B * O * O + 2 * G * O + J),
+    //         l = (O, B, G, J, Y) => B * (O * O * O) + G * (O * O) + J * O + Y, u = (O, B, G, J, Y) => {
+    //             let W = O * O;
+    //             return B * (W * O) + G * W + J * O + Y
+    //         };
+    //     let c = 0, f = 0, p = t, _ = i, v = n, S = r, g = 1, x = 1, M = g - 3 * v + 3 * p - c,
+    //         A = 3 * v - 6 * p + 3 * c, b = 3 * p - 3 * c, w = c, C = x - 3 * S + 3 * _ - f, P = 3 * S - 6 * _ + 3 * f,
+    //         E = 3 * _ - 3 * f, T = f, L = e, F, k, q;
+    //     for (F = 0; F < 100; F++) k = l(L, M, A, b, w), q = a(L, M, A, b), q === 1 / 0 && (q = e), L -= (k - e) * q, L = Math.min(Math.max(L, 0), 1);
+    //     return u(L, C, P, E, T)
+    // }
 }
