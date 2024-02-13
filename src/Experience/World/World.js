@@ -23,12 +23,8 @@ import SoftBodyInner from "./SoftBodyInner.js";
 import InnerPart from "./InnerPart.js";
 import Particles from "./Particles.js";
 
-const math = new MathUtils()
-
-export default class World
-{
-    constructor()
-    {
+export default class World {
+    constructor() {
         this.experience = new Experience()
         this.camera = this.experience.camera;
         this.scene = this.experience.scene
@@ -38,8 +34,7 @@ export default class World
         this.debug = this.experience.debug.panel
 
         // Wait for resources
-        this.resources.on('ready', () =>
-        {
+        this.resources.on( 'ready', () => {
             this.experience.time.start = Date.now()
             this.experience.time.elapsed = 0
 
@@ -67,9 +62,9 @@ export default class World
             this.particles.init()
             this.softBody.postInit()
 
-            this.scene.add(this.particles.container)
-            this.scene.add(this.softBody.container)
-            this.scene.add(this.innerPart.container)
+            this.scene.add( this.particles.container )
+            this.scene.add( this.softBody.container )
+            this.scene.add( this.innerPart.container )
 
             this.bg = new Bg()
             this.dust = new Dust()
@@ -77,82 +72,102 @@ export default class World
             this.environment = new Environment()
 
             // Remove preloader
-            this.html.preloader.classList.add("preloaded");
+            this.html.preloader.classList.add( "preloaded" );
             this.html.preloader.remove();
             this.html.playButton.remove();
 
             this.animationPipeline();
-        })
+        } )
     }
 
     animationPipeline() {
         // if ( this.text )
         //     this.text.animateTextShow()
 
-        if ( this.camera )
+        if( this.camera )
             this.camera.animateCameraPosition()
     }
 
     resize() {
-        let e = this.properties.viewportWidth = window.innerWidth, t = this.properties.viewportHeight = window.innerHeight;
-        this.properties.viewportResolution.set(e, window.innerHeight), document.documentElement.style.setProperty("--vh", t * .01 + "px");
-        let i = this.properties.UP_SCALE, n = e * this.properties.DPR, r = t * this.properties.DPR;
-        if (this.properties.USE_PIXEL_LIMIT === !0 && n * r > this.properties.MAX_PIXEL_COUNT) {
-            let a = n / r;
-            r = Math.sqrt(this.properties.MAX_PIXEL_COUNT / a), n = Math.ceil(r * a), r = Math.ceil(r)
+        const viewportWidth = this.properties.viewportWidth = window.innerWidth;
+        const viewportHeight = this.properties.viewportHeight = window.innerHeight;
+
+        // Set viewport resolution
+        this.properties.viewportResolution.set(viewportWidth, viewportHeight);
+        // Update CSS variable for viewport height
+        document.documentElement.style.setProperty("--vh", `${viewportHeight * 0.01}px`);
+
+        const upScale = this.properties.UP_SCALE;
+        let renderWidth = viewportWidth * this.properties.DPR;
+        let renderHeight = viewportHeight * this.properties.DPR;
+
+        // Adjust dimensions based on pixel limit
+        if (this.properties.USE_PIXEL_LIMIT && renderWidth * renderHeight > this.properties.MAX_PIXEL_COUNT) {
+            const aspectRatio = renderWidth / renderHeight;
+            renderHeight = Math.sqrt(this.properties.MAX_PIXEL_COUNT / aspectRatio);
+            renderWidth = Math.ceil(renderHeight * aspectRatio);
+            renderHeight = Math.ceil(renderHeight);
         }
-        this.properties.width = Math.ceil(n / i)
-        this.properties.height = Math.ceil(r / i)
-        this.properties.resolution.set(this.properties.width, this.properties.height)
-        this.properties.isMobileWidth = e <= 812
-        //app.resize(n, r)
 
-        this.properties.renderer.setSize(n, r)
-        this.properties.canvas.style.width = `${this.properties.viewportWidth}px`
-        this.properties.canvas.style.height = `${this.properties.viewportHeight}px`
-        this.properties.camera.aspect = this.properties.width / this.properties.height
-        // visuals.resize(this.properties.width, this.properties.height),
-        this.softBody.resize(n, r)
-        this.innerPart.resize(n, r)
-        this.bg.resize(n, r)
-        this.dust.resize(n, r)
-        this.terrain.resize(n, r)
+        // Calculate final dimensions considering upscaling
+        this.properties.width = Math.ceil(renderWidth / upScale);
+        this.properties.height = Math.ceil(renderHeight / upScale);
+        this.properties.resolution.set(this.properties.width, this.properties.height);
 
-        this.properties.width < this.properties.height ? this.properties.scaleFactor = this.properties.width / this.properties.height : this.properties.scaleFactor = 1
+        // Detect if viewport width is considered "mobile"
+        this.properties.isMobileWidth = viewportWidth <= 812;
+
+        // Update renderer and canvas size
+        this.properties.renderer.setSize(renderWidth, renderHeight);
+        this.properties.canvas.style.width = `${viewportWidth}px`;
+        this.properties.canvas.style.height = `${viewportHeight}px`;
+
+        // Update camera aspect ratio
+        this.properties.camera.aspect = this.properties.width / this.properties.height;
+
+        // Resize related components
+        this.softBody.resize(renderWidth, renderHeight);
+        this.innerPart.resize(renderWidth, renderHeight);
+        this.bg.resize(renderWidth, renderHeight);
+        this.dust.resize(renderWidth, renderHeight);
+        this.terrain.resize(renderWidth, renderHeight);
+
+        // Adjust scale factor for non-square aspect ratios
+        this.properties.scaleFactor = this.properties.width < this.properties.height ? this.properties.width / this.properties.height : 1;
     }
 
-    update(delta)
-    {
-        this.input && this.input.update(delta)
 
-        if(this.properties) {
+    update( delta ) {
+        this.input && this.input.update( delta )
+
+        if( this.properties ) {
             this.properties.sharedUniforms.u_time.value += delta
             this.properties.deltaTime = this.properties.sharedUniforms.u_deltaTime.value = delta
             this.properties.startTime = this.experience.time.elapsed
             this.properties.sharedUniforms.u_startTime.value = this.properties.startTime
 
-            this.cameraControls && this.cameraControls.update(delta)
-            this.properties.bgColor.setStyle(this.properties.bgColorHex)
-            this.properties.renderer.setClearColor(0, 1)
+            this.cameraControls && this.cameraControls.update( delta )
+            this.properties.bgColor.setStyle( this.properties.bgColorHex )
+            this.properties.renderer.setClearColor( 0, 1 )
         }
 
-        this.blueNoise && this.blueNoise.update(delta)
-        this.bg && this.bg.update(delta)
-        this.dust && this.dust.update(delta)
-        this.terrain && this.terrain.update(delta)
+        this.blueNoise && this.blueNoise.update( delta )
+        this.bg && this.bg.update( delta )
+        this.dust && this.dust.update( delta )
+        this.terrain && this.terrain.update( delta )
 
-        this.lightField && this.lightField.update(delta)
-        this.softBody && this.softBody.update(delta)
-        this.innerPart && this.innerPart.update(delta)
+        this.lightField && this.lightField.update( delta )
+        this.softBody && this.softBody.update( delta )
+        this.innerPart && this.innerPart.update( delta )
 
         if( this.softBodyParticles && this.softBodyParticles.positionRenderTarget ) {
-            this.particles && this.particles.update(delta)
+            this.particles && this.particles.update( delta )
         }
 
-        this.lightField && this.lightField.postUpdate(delta)
-        this.terrain && this.terrain.update(delta)
+        this.lightField && this.lightField.postUpdate( delta )
+        this.terrain && this.terrain.update( delta )
 
 
-        this.input && this.input.postUpdate(delta)
+        this.input && this.input.postUpdate( delta )
     }
 }
