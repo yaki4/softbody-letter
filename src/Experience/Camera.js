@@ -3,12 +3,10 @@ import Experience from './Experience.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import gsap from "gsap";
 
-export default class Camera
-{
+export default class Camera {
     useOrbitControls = !0;
 
-    constructor()
-    {
+    constructor() {
         this.experience = new Experience()
         this.sizes = this.experience.sizes
         this.scene = this.experience.scene
@@ -23,27 +21,25 @@ export default class Camera
         //this.setControls()
     }
 
-    setInstance()
-    {
-        this.instance = new THREE.PerspectiveCamera(60, this.sizes.width / this.sizes.height, .1, 50)
-        this.defaultCameraPosition = new THREE.Vector3(.455, 0, 3.5);
+    setInstance() {
+        this.instance = new THREE.PerspectiveCamera( 60, this.sizes.width / this.sizes.height, .1, 50 )
+        this.defaultCameraPosition = new THREE.Vector3( .455, 0, 3.5 );
 
-        this.instance.position.copy(this.defaultCameraPosition)
-        this.instance.lookAt(new THREE.Vector3(.455, 0, 0));
+        this.instance.position.copy( this.defaultCameraPosition )
+        this.instance.lookAt( new THREE.Vector3( .455, 0, 0 ) );
 
-        this.lerpVector.copy(this.instance.position);
+        this.lerpVector.copy( this.instance.position );
 
-        this.scene.add(this.instance)
+        this.scene.add( this.instance )
     }
 
-    setControls()
-    {
-        this.controls = new OrbitControls(this.instance, this.canvas)
+    setControls() {
+        this.controls = new OrbitControls( this.instance, this.canvas )
         this.controls.enableDamping = true
         this.controls.minDistance = 0;
         this.controls.maxDistance = 500;
         this.controls.enabled = true;
-        this.controls.target = new THREE.Vector3(0, 0, 0);
+        this.controls.target = new THREE.Vector3( 0, 0, 0 );
 
 
         // this.controls.mouseButtons = {
@@ -55,17 +51,15 @@ export default class Camera
         // this.controls.enableZoom = false;
     }
 
-    resize()
-    {
+    resize() {
         this.instance.aspect = this.sizes.width / this.sizes.height
         this.instance.updateProjectionMatrix()
     }
 
-    update()
-    {
+    update() {
         //this.controls.update()
 
-        this.instance.updateMatrixWorld() // To be used in projection
+        //this.instance.updateMatrixWorld() // To be used in projection
     }
 
     animateCameraPosition() {
