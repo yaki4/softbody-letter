@@ -40,13 +40,45 @@ export default class SoftBody {
         this.softBodyParticles.postInit()
     }
 
-    resize(e, t) {
+    resize( width, height ) {
     }
 
-    update(e) {
-        const t = math.clamp(e, .011111111111111112, .025), i = t / this.numSubsteps;
-        this.properties.SKIP_ANIMATION || (this.properties.startTime >= 1 && this.prevStartTime < 1 ? this.needsFakeMouseInteractive = !0 : this.properties.startTime >= 1.5 && this.prevStartTime < 1.5 && (this.needsFakeMouseInteractive = !0)), this.interactiveRatio = math.saturate(this.interactiveRatio + t * 10), this.softBodyTets.updateMouseProj(t), this.needsFakeMouseInteractive && (this.softBodyTets.fakeInitialMouseInteraction(t, this.interactivePattern), this.interactivePattern = (this.interactivePattern + 1) % 2), this.softBodyTets.preSolveMouse(t, this.interactiveRatio), this.needsFakeMouseInteractive && (this.needsFakeMouseInteractive = !1, this.interactiveRatio = 0);
-        for (let n = 0; n < this.numSubsteps; n++) this.softBodyTets.preSolve(i), this.softBodyTets.solve(i), this.softBodyTets.postSolve(i);
-        this.softBodyTets.endFrame(t), this.softBodyParticles.endFrame(t), this.softBodyInner.endFrame(t), this.prevStartTime = this.properties.startTime
+    update( delta ) {
+        const clampedDelta = math.clamp( delta, .011111111111111112, .025 )
+        const substepDuration = clampedDelta / this.numSubsteps;
+
+        if (!this.properties.SKIP_ANIMATION) {
+            if (this.properties.startTime >= 1 && this.prevStartTime < 1) {
+                this.needsFakeMouseInteractive = true;
+            } else if (this.properties.startTime >= 1.5 && this.prevStartTime < 1.5) {
+                this.needsFakeMouseInteractive = true;
+            }
+        }
+
+        this.interactiveRatio = math.saturate( this.interactiveRatio + clampedDelta * 10 )
+        this.softBodyTets.updateMouseProj( clampedDelta )
+
+        if ( this.needsFakeMouseInteractive ) {
+            this.softBodyTets.fakeInitialMouseInteraction( clampedDelta, this.interactivePattern )
+            this.interactivePattern = ( this.interactivePattern + 1 ) % 2
+        }
+
+        this.softBodyTets.preSolveMouse( clampedDelta, this.interactiveRatio );
+
+        if ( this.needsFakeMouseInteractive ) {
+            this.needsFakeMouseInteractive = false
+            this.interactiveRatio = 0
+        }
+
+        for ( let n = 0; n < this.numSubsteps; n++ ){
+            this.softBodyTets.preSolve( substepDuration )
+            this.softBodyTets.solve( substepDuration )
+            this.softBodyTets.postSolve( substepDuration )
+        }
+
+        this.softBodyTets.endFrame( clampedDelta )
+        this.softBodyParticles.endFrame( clampedDelta )
+        this.softBodyInner.endFrame( clampedDelta )
+        this.prevStartTime = this.properties.startTime
     }
 }
