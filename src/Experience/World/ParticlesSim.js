@@ -5,7 +5,7 @@ import particlesVelocitySim from '../Shaders/ParticlesSim/particlesVelocitySim.g
 import particlesPositionSim from '../Shaders/ParticlesSim/particlesPositionSim.glsl'
 
 export default class ParticlesSim {
-    textureSize = new THREE.Vector2(0, 0);
+    textureSize = new THREE.Vector2( 0, 0 );
     particleCount = 0;
     currPositionLifeRenderTarget;
     prevPositionLifeRenderTarget;
@@ -18,15 +18,15 @@ export default class ParticlesSim {
     velocityLifesDataTexture;
     sharedUniforms = {
         u_time: 0,
-        u_deltaTime: {value: 0},
-        u_softBodyTexture: {value: null},
-        u_currPositionLifeTexture: {value: null},
-        u_prevPositionLifeTexture: {value: null},
-        u_currVelocityDistTexture: {value: null},
-        u_prevVelocityDistTexture: {value: null},
-        u_simTextureSize: {value: this.textureSize}
+        u_deltaTime: { value: 0 },
+        u_softBodyTexture: { value: null },
+        u_currPositionLifeTexture: { value: null },
+        u_prevPositionLifeTexture: { value: null },
+        u_currVelocityDistTexture: { value: null },
+        u_prevVelocityDistTexture: { value: null },
+        u_simTextureSize: { value: this.textureSize }
     };
-    hasInit = !1;
+    hasInit = false;
 
     constructor() {
         this.experience = new Experience()
@@ -44,48 +44,97 @@ export default class ParticlesSim {
     }
 
     preInit() {
-        this.currPositionLifeRenderTarget = this.fboHelper.createRenderTarget(1, 1, !0, !0), this.prevPositionLifeRenderTarget = this.fboHelper.createRenderTarget(1, 1, !0, !0), this.currVelocityLifeRenderTarget = this.fboHelper.createRenderTarget(1, 1, !0, !0), this.prevVelocityLifeRenderTarget = this.fboHelper.createRenderTarget(1, 1, !0, !0)
+        this.currPositionLifeRenderTarget = this.fboHelper.createRenderTarget( 1, 1, true, true )
+        this.prevPositionLifeRenderTarget = this.fboHelper.createRenderTarget( 1, 1, true, true )
+        this.currVelocityLifeRenderTarget = this.fboHelper.createRenderTarget( 1, 1, true, true )
+        this.prevVelocityLifeRenderTarget = this.fboHelper.createRenderTarget( 1, 1, true, true )
     }
 
     init() {
-        const t = this.properties.pointsGeometry.attributes.position.array.length / 3, i = Math.ceil(Math.sqrt(t)),
-            n = Math.ceil(t / i), r = i * n;
-        this.textureSize.set(i, n), this.positionLifes = new Float32Array(r * 4), this.velocityLifes = new Float32Array(r * 4), this.currPositionLifeRenderTarget.setSize(i, n), this.prevPositionLifeRenderTarget.setSize(i, n), this.currVelocityLifeRenderTarget.setSize(i, n), this.prevVelocityLifeRenderTarget.setSize(i, n), this.particleCount = t;
-        for (let a = 0, l = 0; a < this.particleCount; a++, l += 4) this.positionLifes[l] = 0, this.positionLifes[l + 1] = 0, this.positionLifes[l + 2] = 0, this.positionLifes[l + 3] = 1.1, this.velocityLifes[l] = 0, this.velocityLifes[l + 1] = 0, this.velocityLifes[l + 2] = 0, this.velocityLifes[l + 3] = this.properties.pointsGeometry.attributes.dist.array[a];
-        this.positionLifesDataTexture = this.fboHelper.createDataTexture(this.positionLifes, i, n, !0, !0), this.velocityLifesDataTexture = this.fboHelper.createDataTexture(this.velocityLifes, i, n, !0, !0), this.fboHelper.copy(this.positionLifesDataTexture, this.currPositionLifeRenderTarget), this.fboHelper.copy(this.positionLifesDataTexture, this.prevPositionLifeRenderTarget), this.fboHelper.copy(this.velocityLifesDataTexture, this.currVelocityLifeRenderTarget), this.velocityMaterial = new THREE.RawShaderMaterial({
+        const particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
+        const width = Math.ceil( Math.sqrt( particleCount ) ) // i
+        const height = Math.ceil( particleCount / width ) // n
+        const dataCount = width * height
+
+        this.textureSize.set( width, height )
+        this.positionLifes = new Float32Array( dataCount * 4 )
+        this.velocityLifes = new Float32Array( dataCount * 4 )
+        this.currPositionLifeRenderTarget.setSize( width, height )
+        this.prevPositionLifeRenderTarget.setSize( width, height )
+        this.currVelocityLifeRenderTarget.setSize( width, height )
+        this.prevVelocityLifeRenderTarget.setSize( width, height )
+        this.particleCount = particleCount
+
+        for ( let i = 0, j = 0; i < this.particleCount; i++, j += 4 ){
+            this.positionLifes[ j ] = 0
+            this.positionLifes[ j + 1 ] = 0
+            this.positionLifes[ j + 2 ] = 0
+            this.positionLifes[ j + 3 ] = 1.1
+            this.velocityLifes[ j ] = 0
+            this.velocityLifes[ j + 1 ] = 0
+            this.velocityLifes[ j + 2 ] = 0
+            this.velocityLifes[ j + 3 ] = this.properties.pointsGeometry.attributes.dist.array[ i ]
+        }
+
+        this.positionLifesDataTexture = this.fboHelper.createDataTexture( this.positionLifes, width, height, true, true )
+        this.velocityLifesDataTexture = this.fboHelper.createDataTexture( this.velocityLifes, width, height, true, true )
+        this.fboHelper.copy( this.positionLifesDataTexture, this.currPositionLifeRenderTarget )
+        this.fboHelper.copy( this.positionLifesDataTexture, this.prevPositionLifeRenderTarget )
+        this.fboHelper.copy( this.velocityLifesDataTexture, this.currVelocityLifeRenderTarget )
+        this.velocityMaterial = new THREE.RawShaderMaterial( {
             uniforms: {
                 u_time: this.sharedUniforms.u_time,
                 u_deltaTime: this.sharedUniforms.u_deltaTime,
                 u_velocityDistTexture: this.sharedUniforms.u_currVelocityDistTexture,
                 u_positionLifeTexture: this.sharedUniforms.u_currPositionLifeTexture,
                 u_prevPositionLifeTexture: this.sharedUniforms.u_prevPositionLifeTexture
-            }, vertexShader: this.fboHelper.vertexShader, fragmentShader: this.fboHelper.precisionPrefix + particlesVelocitySim
-        }), this.positionMaterial = new THREE.RawShaderMaterial({
+            },
+            vertexShader: this.fboHelper.vertexShader,
+            fragmentShader: this.fboHelper.precisionPrefix + particlesVelocitySim
+        } )
+
+        this.positionMaterial = new THREE.RawShaderMaterial( {
             uniforms: {
                 u_time: this.sharedUniforms.u_time,
                 u_deltaTime: this.sharedUniforms.u_deltaTime,
                 u_softBodyTexture: this.sharedUniforms.u_softBodyTexture,
                 u_positionLifeTexture: this.sharedUniforms.u_currPositionLifeTexture,
                 u_velocityDistTexture: this.sharedUniforms.u_currVelocityDistTexture
-            }, vertexShader: this.fboHelper.vertexShader, fragmentShader: this.fboHelper.precisionPrefix + particlesPositionSim
-        }), this.hasInit = !0
+            },
+            vertexShader: this.fboHelper.vertexShader,
+            fragmentShader: this.fboHelper.precisionPrefix + particlesPositionSim
+        } )
+
+        this.hasInit = true
     }
 
-    resize(e, t) {
+    resize( width, height ) {
     }
 
-    update(e) {
-        if (!this.hasInit) return;
-        if (!this.softBodyParticles) {
+    update( delta ) {
+        if( !this.hasInit ) return;
+        if( !this.softBodyParticles ) {
             this.softBodyParticles = this.experience.world.softBodyParticles
 
             return;
-        };
-        this.sharedUniforms.u_deltaTime.value = math.clamp(e, 1 / 90, 1 / 40), this.sharedUniforms.u_softBodyTexture.value = this.softBodyParticles.positionRenderTarget.texture, this.sharedUniforms.u_currPositionLifeTexture.value = this.currPositionLifeRenderTarget.texture, this.sharedUniforms.u_prevPositionLifeTexture.value = this.prevPositionLifeRenderTarget.texture, this.sharedUniforms.u_currVelocityDistTexture.value = this.currVelocityLifeRenderTarget.texture, this.sharedUniforms.u_prevVelocityDistTexture.value = this.prevPositionLifeRenderTarget.texture;
-        const t = this.currPositionLifeRenderTarget;
-        this.currPositionLifeRenderTarget = this.prevPositionLifeRenderTarget, this.prevPositionLifeRenderTarget = t;
-        const i = this.currVelocityLifeRenderTarget;
-        this.currVelocityLifeRenderTarget = this.prevVelocityLifeRenderTarget, this.prevVelocityLifeRenderTarget = i, this.fboHelper.render(this.velocityMaterial, this.currVelocityLifeRenderTarget), this.fboHelper.render(this.positionMaterial, this.currPositionLifeRenderTarget)
+        }
+
+        this.sharedUniforms.u_deltaTime.value = math.clamp( delta, 1 / 90, 1 / 40 )
+        this.sharedUniforms.u_softBodyTexture.value = this.softBodyParticles.positionRenderTarget.texture
+        this.sharedUniforms.u_currPositionLifeTexture.value = this.currPositionLifeRenderTarget.texture
+        this.sharedUniforms.u_prevPositionLifeTexture.value = this.prevPositionLifeRenderTarget.texture
+        this.sharedUniforms.u_currVelocityDistTexture.value = this.currVelocityLifeRenderTarget.texture
+        this.sharedUniforms.u_prevVelocityDistTexture.value = this.prevPositionLifeRenderTarget.texture
+
+        const currPositionLifeRenderTarget = this.currPositionLifeRenderTarget
+        this.currPositionLifeRenderTarget = this.prevPositionLifeRenderTarget
+        this.prevPositionLifeRenderTarget = currPositionLifeRenderTarget
+        const currVelocityLifeRenderTarget = this.currVelocityLifeRenderTarget
+        this.currVelocityLifeRenderTarget = this.prevVelocityLifeRenderTarget
+        this.prevVelocityLifeRenderTarget = currVelocityLifeRenderTarget
+
+        this.fboHelper.render( this.velocityMaterial, this.currVelocityLifeRenderTarget )
+        this.fboHelper.render( this.positionMaterial, this.currPositionLifeRenderTarget )
     }
 
 }

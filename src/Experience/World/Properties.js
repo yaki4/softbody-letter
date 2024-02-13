@@ -4,7 +4,7 @@ import * as DetectUA from "../Utils/DetectUA.js"
 import MinSignal from "min-signal"
 
 const detectUA = DetectUA.default
-const userAgent = (navigator.userAgent || navigator.vendor).toLowerCase()
+const userAgent = ( navigator.userAgent || navigator.vendor ).toLowerCase()
 const browserName = detectUA.browser.name;
 
 export default class Properties {
@@ -48,7 +48,7 @@ export default class Properties {
         u_startTime: { value: 0 }
     };
     initCallFuncList = [];
-    //changeCamera = new MinSignal$2;
+    changeCamera = new MinSignal;
     cameraLookX = 0;
     cameraLookY = 0;
     cameraDistance = 5;
@@ -84,7 +84,7 @@ export default class Properties {
     tintOpacity = .05;
     exporterSignal = new MinSignal;
     onFirstClicked = new MinSignal;
-    isPreloaderFinished = !1;
+    isPreloaderFinished = false;
     pointsGeometry;
     heroColorHex = "#5c4d8f";
     scaleFactor = 1;
@@ -98,7 +98,7 @@ export default class Properties {
     isIOS = !!detectUA.isiOS;
     isMacOS = !!detectUA.isMacOS;
     isWindows = detectUA.isWindows.version !== null;
-    isLinux = userAgent.indexOf("linux") != -1;
+    isLinux = userAgent.indexOf( "linux" ) != -1;
     ua = userAgent;
     isEdge = browserName === "Microsoft Edge";
     isIE = browserName === "Internet Explorer";
@@ -106,7 +106,7 @@ export default class Properties {
     isChrome = browserName === "Chrome";
     isOpera = browserName === "Opera";
     isSafari = browserName === "Safari";
-    isSupportMSAA = !userAgent.match("version/15.4 ");
+    isSupportMSAA = !userAgent.match( "version/15.4 " );
     isRetina = window.devicePixelRatio && window.devicePixelRatio >= 1.5;
     devicePixelRatio = window.devicePixelRatio || 1;
     cpuCoreCount = navigator.hardwareConcurrency || 1;
@@ -123,13 +123,13 @@ export default class Properties {
     USE_FLOAT_PACKING = false;
     USE_WEBGL2 = true;
     USE_MSAA = false;
-    DPR = Math.min(1.5, this.devicePixelRatio) || 1;
+    DPR = Math.min( 1.5, this.devicePixelRatio ) || 1;
     USE_PIXEL_LIMIT = true;
     MAX_PIXEL_COUNT = 2560 * 1440;
     UP_SCALE = 1;
     HIDE_UI = false;
     JUMP_SECTION = "";
-    CROSS_ORIGINS = {"https://example.com/": "anonymous"};
+    CROSS_ORIGINS = { "https://example.com/": "anonymous" };
     IS_DEV = false;
     LOG = false;
     SKIP_ANIMATION = true;
@@ -145,7 +145,7 @@ export default class Properties {
         this.viewportWidth = window.innerWidth
         this.viewportHeight = window.innerHeight
 
-        this.viewportResolution = new THREE.Vector2(this.viewportWidth, this.viewportHeight)
+        this.viewportResolution = new THREE.Vector2( this.viewportWidth, this.viewportHeight )
         this.width = this.viewportWidth
         this.height = this.viewportHeight
     }
