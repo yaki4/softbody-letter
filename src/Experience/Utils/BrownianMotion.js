@@ -59,7 +59,7 @@ export default class BrownianMotion {
     update( deltaTime ) {
         const timeStep = deltaTime === undefined ? 16.666666666666668 : deltaTime;
 
-        if( this._enablePositionNoise ) {
+        if ( this._enablePositionNoise ) {
             // Update time values for position noise
             for ( let axis = 0; axis < 3; axis++ ) {
                 this._times[ axis ] += this._positionFrequency * timeStep;
@@ -80,7 +80,7 @@ export default class BrownianMotion {
             this._position.copy( positionNoise );
         }
 
-        if( this._enableRotationNoise ) {
+        if ( this._enableRotationNoise ) {
             // Update time values for rotation noise
             for ( let axis = 0; axis < 3; axis++ ) {
                 this._times[ axis + 3 ] += this._rotationFrequency * timeStep;
