@@ -51,9 +51,17 @@ export default class ParticlesSim {
     }
 
     init() {
-        const particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
-        const width = Math.ceil( Math.sqrt( particleCount ) ) // i
-        const height = Math.ceil( particleCount / width ) // n
+
+        let particleCount
+
+        if ( this.properties.isMobile ) {
+            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 12
+        } else {
+            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
+        }
+
+        const width = Math.ceil( Math.sqrt( particleCount ) )
+        const height = Math.ceil( particleCount / width )
         const dataCount = width * height
 
         this.textureSize.set( width, height )
