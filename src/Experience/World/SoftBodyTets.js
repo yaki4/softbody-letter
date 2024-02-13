@@ -1,12 +1,19 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
 
-function vecScale( o, e, t ) {
-    e *= 3, o[ e++ ] *= t, o[ e++ ] *= t, o[ e ] *= t
+function vecScale( vectorArray, vectorIndex, scaleFactor ) {
+    vectorIndex *= 3;
+    vectorArray[ vectorIndex++ ] *= scaleFactor;
+    vectorArray[ vectorIndex++ ] *= scaleFactor;
+    vectorArray[ vectorIndex ] *= scaleFactor;
 }
 
-function vecCopy( o, e, t, i ) {
-    e *= 3, i *= 3, o[ e++ ] = t[ i++ ], o[ e++ ] = t[ i++ ], o[ e ] = t[ i ]
+function vecCopy( destinationArray, destinationIndex, sourceArray, sourceIndex ) {
+    destinationIndex *= 3;
+    sourceIndex *= 3;
+    destinationArray[ destinationIndex++ ] = sourceArray[ sourceIndex++ ];
+    destinationArray[ destinationIndex++ ] = sourceArray[ sourceIndex++ ];
+    destinationArray[ destinationIndex ] = sourceArray[ sourceIndex ];
 }
 
 function vecAdd( resultArray, resultIndex, sourceArray, sourceIndex, multiplier = 1 ) {
@@ -61,8 +68,9 @@ function vecSetCross( resultArray, resultIndex, array1, index1, array2, index2 )
     resultArray[ resultIndex ] = array1[ index1 ] * array2[ index2 + 1 ] - array1[ index1 + 1 ] * array2[ index2 ];
 }
 
-const _v0 = new THREE.Vector3, _v1 = new THREE.Vector3, _v2 = new THREE.Vector3;
-
+const tempVectorA = new THREE.Vector3
+const tempVectorB = new THREE.Vector3
+const tempVectorC = new THREE.Vector3
 
 export default class SoftBodyTets {
     container = new THREE.Object3D;
@@ -95,153 +103,364 @@ export default class SoftBodyTets {
     }
 
     _onTetsModelLoad() {
-        const e = {}, t = [];
+        const uniqueEdges = {};
+        const edgeList = [];
+
+        // Iterate over the tetrahedron indices, 4 at a time
         for ( let i = 0; i < this.tetGeometry.index.array.length; i += 4 ) {
-            const n = this.tetGeometry.index.array[ i ], r = this.tetGeometry.index.array[ i + 1 ],
-                a = this.tetGeometry.index.array[ i + 2 ], l = this.tetGeometry.index.array[ i + 3 ],
-                u = [ n, r ].sort(),
-                c = [ n, a ].sort(), f = [ n, l ].sort(), p = [ r, a ].sort(), _ = [ r, l ].sort(), v = [ a, l ].sort();
-            e[ u.join( "-" ) ] = u, e[ c.join( "-" ) ] = c, e[ f.join( "-" ) ] = f, e[ p.join( "-" ) ] = p, e[ _.join( "-" ) ] = _, e[ v.join( "-" ) ] = v
+            const vertex1 = this.tetGeometry.index.array[ i ],
+                vertex2 = this.tetGeometry.index.array[ i + 1 ],
+                vertex3 = this.tetGeometry.index.array[ i + 2 ],
+                vertex4 = this.tetGeometry.index.array[ i + 3 ];
+
+            // Generate sorted pairs (edges) for each tetrahedron to ensure uniqueness
+            const edges = [
+                [ vertex1, vertex2 ].sort(),
+                [ vertex1, vertex3 ].sort(),
+                [ vertex1, vertex4 ].sort(),
+                [ vertex2, vertex3 ].sort(),
+                [ vertex2, vertex4 ].sort(),
+                [ vertex3, vertex4 ].sort()
+            ];
+
+            // Store unique edges in an object using a string representation as the key
+            edges.forEach( edge => {
+                const key = edge.join( "-" );
+                uniqueEdges[ key ] = edge;
+            } );
         }
-        for ( let i in e ) t.push( e[ i ] );
-        this.tetGeometry.userData.tetArray = this.tetGeometry.index.array, this.tetGeometry.userData.edgeArray = t
+
+        // Convert the unique edges object back into an array
+        for ( const key in uniqueEdges ) {
+            edgeList.push( uniqueEdges[ key ] );
+        }
+
+        // Store the original tetrahedron indices and the unique edge list in the geometry's userData
+        this.tetGeometry.userData.tetArray = this.tetGeometry.index.array;
+        this.tetGeometry.userData.edgeArray = edgeList;
     }
 
     init() {
-        this.computeTetsData(), this.computeConstraintsData(), this.initPhysics();
-        const e = new THREE.LineBasicMaterial( { color: 16777215, linewidth: 2 } );
-        this.tetMesh = new THREE.LineSegments( this.tetGeometry, e ), this.container.add( this.tetMesh )
+        this.computeTetsData()
+        this.computeConstraintsData()
+        this.initPhysics()
+
+        const material = new THREE.LineBasicMaterial( { color: 16777215, linewidth: 2 } )
+
+        this.tetMesh = new THREE.LineSegments( this.tetGeometry, material )
+        this.container.add( this.tetMesh )
     }
 
     computeTetsData() {
-        this.numParticles = this.tetGeometry.attributes.position.array.length / 3, this.numTets = this.tetGeometry.index.array.length / 4, this.pos = this.tetGeometry.attributes.position.array, this.prevPos = this.tetGeometry.attributes.position.array.slice(), this.vel = new Float32Array( 3 * this.numParticles ), this.tetIds = this.tetGeometry.index.array, this.edgeIds = this.tetGeometry.userData.edgeArray, this.restVol = new Float32Array( this.numTets ), this.edgeLengths = new Float32Array( this.edgeIds.length / 2 ), this.invMass = new Float32Array( this.numParticles );
-        const e = Math.ceil( Math.sqrt( this.numParticles ) ), t = Math.ceil( this.numParticles / e ), i = e * t;
-        this.posTextureSize = new THREE.Vector2( e, t ), this.posTextureArray = new Float32Array( 4 * i ), this.posTexture = this.fboHelper.createDataTexture( this.posTextureArray, e, t, !0, !0 )
+        this.numParticles = this.tetGeometry.attributes.position.array.length / 3;
+        this.numTets = this.tetGeometry.index.array.length / 4;
+        this.pos = this.tetGeometry.attributes.position.array;
+        this.prevPos = this.tetGeometry.attributes.position.array.slice();
+        this.vel = new Float32Array( 3 * this.numParticles );
+        this.tetIds = this.tetGeometry.index.array;
+        this.edgeIds = this.tetGeometry.userData.edgeArray;
+        this.restVol = new Float32Array( this.numTets );
+        this.edgeLengths = new Float32Array( this.edgeIds.length / 2 );
+        this.invMass = new Float32Array( this.numParticles );
+
+        const textureWidth = Math.ceil( Math.sqrt( this.numParticles ) );
+        const textureHeight = Math.ceil( this.numParticles / textureWidth );
+        const textureSize = textureWidth * textureHeight;
+
+        this.posTextureSize = new THREE.Vector2( textureWidth, textureHeight );
+        this.posTextureArray = new Float32Array( 4 * textureSize );
+        this.posTexture = this.fboHelper.createDataTexture( this.posTextureArray, textureWidth, textureHeight, true, true );
     }
 
     computeConstraintsData() {
-        this.numConstraints = this.innerSplineGeometry.attributes.position.array.length / 3, this.splinePos = this.innerSplineGeometry.attributes.position.array, this.constraintsIndex = new Float32Array( this.numParticles ), this.staticConstraintsLengths = new Float32Array( this.numParticles );
-        for ( let e = 0; e < this.numParticles; e++ ) {
-            _v0.fromArray( this.pos, e * 3 );
-            let t = Number.MAX_VALUE;
-            for ( let i = 0; i < this.numConstraints; i++ ) {
-                _v1.fromArray( this.splinePos, i * 3 );
-                const n = _v0.distanceTo( _v1 );
-                n < t && ( t = n, this.constraintsIndex[ e ] = i )
+        this.numConstraints = this.innerSplineGeometry.attributes.position.array.length / 3;
+        this.splinePos = this.innerSplineGeometry.attributes.position.array;
+        this.constraintsIndex = new Float32Array( this.numParticles );
+        this.staticConstraintsLengths = new Float32Array( this.numParticles );
+
+        for ( let particleIndex = 0; particleIndex < this.numParticles; particleIndex++ ) {
+            tempVectorA.fromArray( this.pos, particleIndex * 3 );
+            let minDistance = Number.MAX_VALUE;
+
+            for ( let constraintIndex = 0; constraintIndex < this.numConstraints; constraintIndex++ ) {
+                tempVectorB.fromArray( this.splinePos, constraintIndex * 3 );
+                const distance = tempVectorA.distanceTo( tempVectorB );
+
+                if( distance < minDistance ) {
+                    minDistance = distance;
+                    this.constraintsIndex[ particleIndex ] = constraintIndex;
+                }
             }
-            this.staticConstraintsLengths[ e ] = t
+            this.staticConstraintsLengths[ particleIndex ] = minDistance;
         }
     }
 
-    getTetVolume( e ) {
-        const t = this.tetIds[ 4 * e ], i = this.tetIds[ 4 * e + 1 ], n = this.tetIds[ 4 * e + 2 ],
-            r = this.tetIds[ 4 * e + 3 ];
-        return vecSetDiff( this.temp, 0, this.pos, i, this.pos, t ), vecSetDiff( this.temp, 1, this.pos, n, this.pos, t ), vecSetDiff( this.temp, 2, this.pos, r, this.pos, t ), vecSetCross( this.temp, 3, this.temp, 0, this.temp, 1 ), vecDot( this.temp, 3, this.temp, 2 ) / 6
+    getTetVolume( tetIndex ) {
+        // Retrieve the indices of the tetrahedron's vertices
+        const vertexIndexA = this.tetIds[ 4 * tetIndex ];
+        const vertexIndexB = this.tetIds[ 4 * tetIndex + 1 ];
+        const vertexIndexC = this.tetIds[ 4 * tetIndex + 2 ];
+        const vertexIndexD = this.tetIds[ 4 * tetIndex + 3 ];
+
+        // Compute vectors from the first vertex to the others
+        vecSetDiff( this.temp, 0, this.pos, vertexIndexB, this.pos, vertexIndexA );
+        vecSetDiff( this.temp, 1, this.pos, vertexIndexC, this.pos, vertexIndexA );
+        vecSetDiff( this.temp, 2, this.pos, vertexIndexD, this.pos, vertexIndexA );
+
+        // Compute the cross product of two of these vectors
+        vecSetCross( this.temp, 3, this.temp, 0, this.temp, 1 );
+
+        // Compute the dot product of the cross product with the third vector and divide by 6 to get the volume
+        return vecDot( this.temp, 3, this.temp, 2 ) / 6;
     }
 
     initPhysics() {
-        this.invMass.fill( 0 ), this.restVol.fill( 0 );
-        for ( let e = 0; e < this.numTets; e++ ) {
-            const t = this.getTetVolume( e );
-            this.restVol[ e ] = t;
-            const i = t > 0 ? 1 / ( t / 4 ) : 0;
-            this.invMass[ this.tetIds[ 4 * e ] ] += i, this.invMass[ this.tetIds[ 4 * e + 1 ] ] += i, this.invMass[ this.tetIds[ 4 * e + 2 ] ] += i, this.invMass[ this.tetIds[ 4 * e + 3 ] ] += i
+        // Initialize inverse mass and rest volume arrays
+        this.invMass.fill( 0 );
+        this.restVol.fill( 0 );
+
+        // Compute rest volumes and inverse masses for each tetrahedron
+        for ( let tetIndex = 0; tetIndex < this.numTets; tetIndex++ ) {
+            const volume = this.getTetVolume( tetIndex );
+            this.restVol[ tetIndex ] = volume;
+
+            // Compute inverse mass for each vertex of the tetrahedron
+            const inverseMassValue = volume > 0 ? 1 / ( volume / 4 ) : 0;
+            for ( let vertexOffset = 0; vertexOffset < 4; vertexOffset++ ) {
+                const vertexIndex = this.tetIds[ 4 * tetIndex + vertexOffset ];
+                this.invMass[ vertexIndex ] += inverseMassValue;
+            }
         }
-        for ( let e = 0; e < this.edgeLengths.length; e++ ) {
-            const t = this.edgeIds[ e ][ 0 ], i = this.edgeIds[ e ][ 1 ];
-            this.edgeLengths[ e ] = Math.sqrt( vecDistSquared( this.pos, t, this.pos, i ) )
+
+        // Compute lengths for each edge
+        for ( let edgeIndex = 0; edgeIndex < this.edgeLengths.length; edgeIndex++ ) {
+            const [ vertexIndexA, vertexIndexB ] = this.edgeIds[ edgeIndex ];
+            this.edgeLengths[ edgeIndex ] = Math.sqrt( vecDistSquared( this.pos, vertexIndexA, this.pos, vertexIndexB ) );
         }
     }
 
-    updateMouseProj( e ) {
+
+    updateMouseProj( deltaTime ) {
         if( !this.properties.isMobile || this.input.isDown ) {
-            _v0.set( this.input.mouseXY.x, this.input.mouseXY.y, 1 ),
-                _v0.unproject( this.properties.camera ),
-                _v0.sub( this.properties.camera.position ).normalize(),
-                _v1.set( 0, 0, -1 ).applyQuaternion( this.properties.camera.quaternion );
-            const t = this.properties.cameraDistance / _v0.dot( _v1 );
-            this.mouseProjPrev.copy( this.mouseProj ),
-                this.mouseProj.copy( this.properties.camera.position ).add( _v0.multiplyScalar( t ) ),
-            this.properties.isMobile && !this.input.wasDown && this.mouseProjPrev.copy( this.mouseProj ),
-                this.mouseVel.subVectors( this.mouseProj, this.mouseProjPrev ).multiplyScalar( 1 / e )
-        } else this.mouseVel.setScalar( 0 )
+            // Set tempVectorA to the unprojected mouse position in 3D space
+            tempVectorA.set( this.input.mouseXY.x, this.input.mouseXY.y, 1 );
+            tempVectorA.unproject( this.properties.camera );
+            tempVectorA.sub( this.properties.camera.position ).normalize();
+
+            // Set tempVectorB to the direction the camera is facing
+            tempVectorB.set( 0, 0, -1 ).applyQuaternion( this.properties.camera.quaternion );
+
+            // Calculate the scale factor to project the point onto the desired camera plane
+            const scaleFactor = this.properties.cameraDistance / tempVectorA.dot( tempVectorB );
+
+            // Update the previous mouse projection position
+            this.mouseProjPrev.copy( this.mouseProj );
+
+            // Update the current mouse projection position
+            this.mouseProj.copy( this.properties.camera.position ).add( tempVectorA.multiplyScalar( scaleFactor ) );
+
+            // On mobile, if the input was not down before, set the previous position to the current one
+            if( this.properties.isMobile && !this.input.wasDown ) {
+                this.mouseProjPrev.copy( this.mouseProj );
+            }
+
+            // Update the mouse velocity based on the change in projection position
+            this.mouseVel.subVectors( this.mouseProj, this.mouseProjPrev ).multiplyScalar( 1 / deltaTime );
+        } else {
+            // If not on mobile or the input is not down, set the mouse velocity to zero
+            this.mouseVel.setScalar( 0 );
+        }
     }
 
-    fakeInitialMouseInteraction( e, t ) {
-        let i = 1;
-        t == 0 ? ( this.mouseProjPrev.set( 0, -.7, 0 ), this.mouseProj.set( .35, 0, 0 ), i = .5 ) : t == 1 && ( this.mouseProjPrev.set( -.3, .2, 0 ), this.mouseProj.set( -.1, .4, 0 ), i = 1 ), this.mouseVel.subVectors( this.mouseProj, this.mouseProjPrev ).multiplyScalar( i / e )
+    fakeInitialMouseInteraction( deltaTime, interactionType ) {
+        let velocityScale = 1;
+
+        if( interactionType === 0 ) {
+            // Set initial and final mouse positions for the first type of interaction
+            this.mouseProjPrev.set( 0, -0.7, 0 );
+            this.mouseProj.set( 0.35, 0, 0 );
+            velocityScale = 0.5;
+        } else if( interactionType === 1 ) {
+            // Set initial and final mouse positions for the second type of interaction
+            this.mouseProjPrev.set( -0.3, 0.2, 0 );
+            this.mouseProj.set( -0.1, 0.4, 0 );
+            velocityScale = 1;
+        }
+
+        // Calculate mouse velocity based on the change in positions, scaled by velocityScale and adjusted for deltaTime
+        this.mouseVel.subVectors( this.mouseProj, this.mouseProjPrev ).multiplyScalar( velocityScale / deltaTime );
     }
 
-    preSolveMouse( e, t ) {
-        _v2.subVectors( this.mouseProj, this.mouseProjPrev );
-        let i = _v2.dot( _v2 );
-        if( i > 0 ) {
-            let n = 1 / i;
-            for ( let r = 0; r < this.numParticles; r++ ) {
-                _v1.fromArray( this.pos, r * 3 ), _v0.subVectors( _v1, this.mouseProjPrev );
-                let a = math.clamp( _v0.dot( _v2 ) * n, 0, 1 );
-                _v0.sub( _v1.copy( _v2 ).multiplyScalar( a ) ).length() < .1 && ( _v0.copy( this.mouseVel ).multiplyScalar( .25 * t * math.fit( this.properties.startTime, 0, 1, 0, 1 ) ), this.vel[ 3 * r ] += _v0.x, this.vel[ 3 * r + 1 ] += _v0.y, this.vel[ 3 * r + 2 ] += _v0.z )
+    preSolveMouse( deltaTime, interactionStrength ) {
+        // Calculate the difference vector between the current and previous mouse positions
+        const mouseMovement = tempVectorC.subVectors( this.mouseProj, this.mouseProjPrev );
+        const movementMagnitudeSquared = mouseMovement.dot( mouseMovement );
+
+        if( movementMagnitudeSquared > 0 ) {
+            const inverseMagnitudeSquared = 1 / movementMagnitudeSquared;
+
+            for ( let particleIndex = 0; particleIndex < this.numParticles; particleIndex++ ) {
+                // Get the position of the current particle
+                const particlePosition = tempVectorB.fromArray( this.pos, particleIndex * 3 );
+                // Calculate the vector from the previous mouse position to the current particle
+                const toParticle = tempVectorA.subVectors( particlePosition, this.mouseProjPrev );
+
+                // Project the toParticle vector onto the mouseMovement vector, and clamp the result between 0 and 1
+                const projectionFactor = math.clamp( toParticle.dot( mouseMovement ) * inverseMagnitudeSquared, 0, 1 );
+                // Calculate the closest point on the mouseMovement vector to the particle
+                const closestPoint = tempVectorB.copy( mouseMovement ).multiplyScalar( projectionFactor );
+
+                // If the particle is within a certain threshold distance from the line of mouse movement
+                if( toParticle.sub( closestPoint ).length() < 0.1 ) {
+                    // Scale the mouse velocity and apply it to the particle's velocity
+                    const scaledMouseVel = tempVectorA.copy( this.mouseVel ).multiplyScalar( 0.25 * interactionStrength * math.fit( this.properties.startTime, 0, 1, 0, 1 ) );
+                    this.vel[ 3 * particleIndex ] += scaledMouseVel.x;
+                    this.vel[ 3 * particleIndex + 1 ] += scaledMouseVel.y;
+                    this.vel[ 3 * particleIndex + 2 ] += scaledMouseVel.z;
+                }
             }
         }
     }
 
-    preSolve( e ) {
-        for ( let t = 0; t < this.numParticles; t++ ) {
-            _v0.fromArray( this.splinePos, this.constraintsIndex[ t ] * 3 ), _v1.fromArray( this.pos, t * 3 ), _v2.subVectors( _v1, _v0 );
-            const i = this.staticConstraintsLengths[ t ], n = _v2.length();
-            n != i && ( _v2.normalize(), _v2.multiplyScalar( ( i - n ) * e * 80 ), _v0.fromArray( this.vel, t * 3 ), _v0.add( _v2 ), this.vel[ 3 * t ] = _v0.x, this.vel[ 3 * t + 1 ] = _v0.y, this.vel[ 3 * t + 2 ] = _v0.z ), vecCopy( this.prevPos, t, this.pos, t ), vecAdd( this.pos, t, this.vel, t, e )
-        }
-    }
+    preSolve( deltaTime ) {
+        for ( let particleIndex = 0; particleIndex < this.numParticles; particleIndex++ ) {
+            // Get the constraint position for the current particle from the spline
+            const constraintPosition = tempVectorA.fromArray( this.splinePos, this.constraintsIndex[ particleIndex ] * 3 );
+            // Get the current position of the particle
+            const particlePosition = tempVectorB.fromArray( this.pos, particleIndex * 3 );
+            // Calculate the vector from the particle to the constraint position
+            const toConstraint = tempVectorC.subVectors( particlePosition, constraintPosition );
 
-    solve( e ) {
-        this.solveEdges( this.edgeCompliance, e ), this.solveVolumes( this.volCompliance, e )
-    }
+            // Retrieve the static constraint length for the current particle
+            const staticLength = this.staticConstraintsLengths[ particleIndex ];
+            const currentLength = toConstraint.length();
 
-    postSolve( e ) {
-        let t = math.mix( 1, .5, 1 - Math.exp( -10 * e ) );
-        for ( let i = 0; i < this.numParticles; i++ ) this.vel[ 3 * i + 0 ] *= t, this.vel[ 3 * i + 1 ] *= t, this.vel[ 3 * i + 2 ] *= t
-    }
-
-    solveEdges( e, t ) {
-        const i = e / t / t;
-        for ( let n = 0; n < this.edgeLengths.length; n++ ) {
-            const r = this.edgeIds[ n ][ 0 ], a = this.edgeIds[ n ][ 1 ], l = this.invMass[ r ], u = this.invMass[ a ],
-                c = l + u;
-            if( c == 0 ) continue;
-            vecSetDiff( this.grads, 0, this.pos, r, this.pos, a );
-            const f = Math.sqrt( vecLengthSquared( this.grads, 0 ) );
-            if( f == 0 ) continue;
-            vecScale( this.grads, 0, 1 / f );
-            const p = this.edgeLengths[ n ], v = -( f - p ) / ( c + i );
-            vecAdd( this.pos, r, this.grads, 0, v * l ), vecAdd( this.pos, a, this.grads, 0, -v * u )
-        }
-    }
-
-    solveVolumes( e, t ) {
-        const i = e / t / t;
-        for ( let n = 0; n < this.numTets; n++ ) {
-            let r = 0;
-            for ( let f = 0; f < 4; f++ ) {
-                const p = this.tetIds[ 4 * n + this.volIdOrder[ f ][ 0 ] ],
-                    _ = this.tetIds[ 4 * n + this.volIdOrder[ f ][ 1 ] ],
-                    v = this.tetIds[ 4 * n + this.volIdOrder[ f ][ 2 ] ];
-                vecSetDiff( this.temp, 0, this.pos, _, this.pos, p ), vecSetDiff( this.temp, 1, this.pos, v, this.pos, p ), vecSetCross( this.grads, f, this.temp, 0, this.temp, 1 ), vecScale( this.grads, f, 1 / 6 ), r += this.invMass[ this.tetIds[ 4 * n + f ] ] * vecLengthSquared( this.grads, f )
+            // If the current length doesn't match the static length, adjust the particle's velocity
+            if( currentLength !== staticLength ) {
+                toConstraint.normalize();
+                toConstraint.multiplyScalar( ( staticLength - currentLength ) * deltaTime * 80 );
+                // Update the velocity based on the constraint correction
+                const particleVelocity = tempVectorA.fromArray( this.vel, particleIndex * 3 );
+                particleVelocity.add( toConstraint );
+                this.vel[ 3 * particleIndex ] = particleVelocity.x;
+                this.vel[ 3 * particleIndex + 1 ] = particleVelocity.y;
+                this.vel[ 3 * particleIndex + 2 ] = particleVelocity.z;
             }
-            if( r == 0 ) continue;
-            const a = this.getTetVolume( n ), l = this.restVol[ n ], c = -( a - l ) / ( r + i );
-            for ( let f = 0; f < 4; f++ ) {
-                const p = this.tetIds[ 4 * n + f ];
-                vecAdd( this.pos, p, this.grads, f, c * this.invMass[ p ] )
+
+            // Copy the current position to the previous position for the next iteration
+            vecCopy( this.prevPos, particleIndex, this.pos, particleIndex );
+            // Update the particle's position based on its velocity
+            vecAdd( this.pos, particleIndex, this.vel, particleIndex, deltaTime );
+        }
+    }
+
+    solve( timeStep ) {
+        // Solve edge constraints with specified edge compliance and time step
+        this.solveEdges( this.edgeCompliance, timeStep );
+
+        // Solve volume constraints with specified volume compliance and time step
+        this.solveVolumes( this.volCompliance, timeStep );
+    }
+
+    postSolve( dampingFactor ) {
+        // Calculate the damping multiplier using an exponential decay formula
+        const dampingMultiplier = math.mix( 1, 0.5, 1 - Math.exp( -10 * dampingFactor ) );
+
+        // Apply the damping multiplier to the velocity of each particle
+        for ( let particleIndex = 0; particleIndex < this.numParticles; particleIndex++ ) {
+            this.vel[ 3 * particleIndex ] *= dampingMultiplier;     // Dampen X component
+            this.vel[ 3 * particleIndex + 1 ] *= dampingMultiplier; // Dampen Y component
+            this.vel[ 3 * particleIndex + 2 ] *= dampingMultiplier; // Dampen Z component
+        }
+    }
+
+    solveEdges( edgeCompliance, timeStep ) {
+        const complianceFactor = edgeCompliance / ( timeStep * timeStep );
+
+        for ( let edgeIndex = 0; edgeIndex < this.edgeLengths.length; edgeIndex++ ) {
+            const vertexIndexA = this.edgeIds[ edgeIndex ][ 0 ];
+            const vertexIndexB = this.edgeIds[ edgeIndex ][ 1 ];
+            const inverseMassA = this.invMass[ vertexIndexA ];
+            const inverseMassB = this.invMass[ vertexIndexB ];
+            const totalInverseMass = inverseMassA + inverseMassB;
+
+            if( totalInverseMass === 0 ) continue;
+
+            // Calculate the gradient of the edge
+            vecSetDiff( this.grads, 0, this.pos, vertexIndexA, this.pos, vertexIndexB );
+
+            const currentLength = Math.sqrt( vecLengthSquared( this.grads, 0 ) );
+            if( currentLength === 0 ) continue;
+
+            // Normalize the gradient
+            vecScale( this.grads, 0, 1 / currentLength );
+
+            const restLength = this.edgeLengths[ edgeIndex ];
+            const correctionMagnitude = -( currentLength - restLength ) / ( totalInverseMass + complianceFactor );
+
+            // Apply position corrections based on the edge gradient and correction magnitude
+            vecAdd( this.pos, vertexIndexA, this.grads, 0, correctionMagnitude * inverseMassA );
+            vecAdd( this.pos, vertexIndexB, this.grads, 0, -correctionMagnitude * inverseMassB );
+        }
+    }
+
+    solveVolumes( volumeCompliance, timeStep ) {
+        const complianceFactor = volumeCompliance / ( timeStep * timeStep );
+
+        for ( let tetIndex = 0; tetIndex < this.numTets; tetIndex++ ) {
+            let totalInverseMass = 0;
+
+            // Compute gradients for each face of the tetrahedron
+            for ( let faceIndex = 0; faceIndex < 4; faceIndex++ ) {
+                const vertexIndexA = this.tetIds[ 4 * tetIndex + this.volIdOrder[ faceIndex ][ 0 ] ];
+                const vertexIndexB = this.tetIds[ 4 * tetIndex + this.volIdOrder[ faceIndex ][ 1 ] ];
+                const vertexIndexC = this.tetIds[ 4 * tetIndex + this.volIdOrder[ faceIndex ][ 2 ] ];
+
+                // Compute vectors for two edges of the face
+                vecSetDiff( this.temp, 0, this.pos, vertexIndexB, this.pos, vertexIndexA );
+                vecSetDiff( this.temp, 1, this.pos, vertexIndexC, this.pos, vertexIndexA );
+
+                // Compute the gradient (normal) for the face using the cross product
+                vecSetCross( this.grads, faceIndex, this.temp, 0, this.temp, 1 );
+                // Scale the gradient to get the correct volume contribution
+                vecScale( this.grads, faceIndex, 1 / 6 );
+
+                // Accumulate the weighted sum of the squared lengths of the gradients
+                totalInverseMass += this.invMass[ this.tetIds[ 4 * tetIndex + faceIndex ] ] * vecLengthSquared( this.grads, faceIndex );
+            }
+
+            if( totalInverseMass == 0 ) continue;
+
+            // Compute the volume correction factor
+            const currentVolume = this.getTetVolume( tetIndex );
+            const restVolume = this.restVol[ tetIndex ];
+            const volumeCorrection = -( currentVolume - restVolume ) / ( totalInverseMass + complianceFactor );
+
+            // Apply the volume correction to each vertex of the tetrahedron
+            for ( let vertexIndex = 0; vertexIndex < 4; vertexIndex++ ) {
+                const globalVertexIndex = this.tetIds[ 4 * tetIndex + vertexIndex ];
+                vecAdd( this.pos, globalVertexIndex, this.grads, vertexIndex, volumeCorrection * this.invMass[ globalVertexIndex ] );
             }
         }
     }
 
-    endFrame( e ) {
-        const t = this.tetMesh.geometry.attributes.position.array;
-        for ( let i = 0; i < this.pos.length; i++ ) t[ i ] = this.pos[ i ];
-        this.tetMesh.geometry.attributes.position.needsUpdate = !0;
-        for ( let i = 0; i < this.numParticles; i++ ) this.posTextureArray[ 4 * i ] = this.pos[ 3 * i ], this.posTextureArray[ 4 * i + 1 ] = this.pos[ 3 * i + 1 ], this.posTextureArray[ 4 * i + 2 ] = this.pos[ 3 * i + 2 ], this.posTextureArray[ 4 * i + 3 ] = 1;
-        this.posTexture.needsUpdate = !0
+    endFrame( timeStep ) {
+        const positionArray = this.tetMesh.geometry.attributes.position.array;
+
+        // Update the geometry's position array with the latest positions
+        for ( let index = 0; index < this.pos.length; index++ ) {
+            positionArray[ index ] = this.pos[ index ];
+        }
+        this.tetMesh.geometry.attributes.position.needsUpdate = true;
+
+        // Update the position texture array with the latest positions and set the fourth component to 1
+        for ( let particleIndex = 0; particleIndex < this.numParticles; particleIndex++ ) {
+            this.posTextureArray[ 4 * particleIndex ] = this.pos[ 3 * particleIndex ];     // X component
+            this.posTextureArray[ 4 * particleIndex + 1 ] = this.pos[ 3 * particleIndex + 1 ]; // Y component
+            this.posTextureArray[ 4 * particleIndex + 2 ] = this.pos[ 3 * particleIndex + 2 ]; // Z component
+            this.posTextureArray[ 4 * particleIndex + 3 ] = 1; // W component (usually used for alpha or homogeneity)
+        }
+        this.posTexture.needsUpdate = true;
     }
 
 }
