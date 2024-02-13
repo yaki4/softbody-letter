@@ -26,20 +26,21 @@ export default class Terrain {
         this.texture = this.resources.items.bakeTerrain;
         this.geometry = this.resources.items.bufferTerrain;
 
-        this.material = new THREE.ShaderMaterial({
-            uniforms: Object.assign({
-                u_texture: new THREE.Uniform(this.texture),
-                u_time: new THREE.Uniform(0),
-                u_resolution: new THREE.Uniform(new THREE.Vector2(this.sizes.width, this.sizes.height)),
-            },
-            this.lightField.sharedUniforms,
-            this.blueNoise.sharedUniforms),
+        this.material = new THREE.ShaderMaterial( {
+            uniforms: Object.assign( {
+                    u_texture: new THREE.Uniform( this.texture ),
+                    u_time: new THREE.Uniform( 0 ),
+                    u_resolution: new THREE.Uniform( new THREE.Vector2( this.sizes.width, this.sizes.height ) ),
+                },
+                this.lightField.sharedUniforms,
+                this.blueNoise.sharedUniforms ),
             vertexShader: vert,
             fragmentShader: frag
-        });
-        this.mesh = new THREE.Mesh(this.geometry, this.material)
+        } )
 
-        this.scene.add(this.mesh)
+        this.mesh = new THREE.Mesh( this.geometry, this.material )
+
+        this.scene.add( this.mesh )
     }
 
     resize() {
@@ -51,7 +52,7 @@ export default class Terrain {
 
     }
 
-    update(delta) {
-        this.mesh && (this.mesh.material.uniforms.u_time.value += delta)
+    update( delta ) {
+        this.mesh && ( this.mesh.material.uniforms.u_time.value += delta )
     }
 }
