@@ -25,12 +25,12 @@ export default class DeviceOrientationControls {
     _onBoundDeviceOrientationChangeEvent;
     _onBoundScreenOrientationChangeEvent;
 
-    constructor(targetObject) {
+    constructor( targetObject ) {
         this.object = targetObject;
-        this.object.rotation.reorder("YXZ");
+        this.object.rotation.reorder( "YXZ" );
 
-        this._onBoundDeviceOrientationChangeEvent = this._onDeviceOrientationChangeEvent.bind(this);
-        this._onBoundScreenOrientationChangeEvent = this._onScreenOrientationChangeEvent.bind(this);
+        this._onBoundDeviceOrientationChangeEvent = this._onDeviceOrientationChangeEvent.bind( this );
+        this._onBoundScreenOrientationChangeEvent = this._onScreenOrientationChangeEvent.bind( this );
         this.connect();
     }
 
@@ -42,28 +42,28 @@ export default class DeviceOrientationControls {
         this.screenOrientation = window.orientation || 0
     }
 
-    setObjectQuaternion(quaternion, pitch, yaw, roll, angle) {
-        this.euler.set(yaw, pitch, -roll, "YXZ");
-        quaternion.setFromEuler(this.euler);
-        quaternion.multiply(this.tempQuaternionB);
-        quaternion.multiply(this.tempQuaternionA.setFromAxisAngle(this.zee, -angle));
+    setObjectQuaternion( quaternion, pitch, yaw, roll, angle ) {
+        this.euler.set( yaw, pitch, -roll, "YXZ" );
+        quaternion.setFromEuler( this.euler );
+        quaternion.multiply( this.tempQuaternionB );
+        quaternion.multiply( this.tempQuaternionA.setFromAxisAngle( this.zee, -angle ) );
     }
 
     connect() {
         this._onBoundScreenOrientationChangeEvent();
 
-        if (window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === "function") {
-            window.DeviceOrientationEvent.requestPermission().then(permissionResponse => {
-                if (permissionResponse === "granted") {
-                    window.addEventListener("orientationchange", this._onBoundScreenOrientationChangeEvent, false);
-                    window.addEventListener("deviceorientation", this._onBoundDeviceOrientationChangeEvent, false);
+        if ( window.DeviceOrientationEvent !== undefined && typeof window.DeviceOrientationEvent.requestPermission === "function" ) {
+            window.DeviceOrientationEvent.requestPermission().then( permissionResponse => {
+                if ( permissionResponse === "granted" ) {
+                    window.addEventListener( "orientationchange", this._onBoundScreenOrientationChangeEvent, false );
+                    window.addEventListener( "deviceorientation", this._onBoundDeviceOrientationChangeEvent, false );
                 }
-            }).catch(error => {
+            } ).catch( error => {
 
-            });
+            } );
         } else {
-            window.addEventListener("orientationchange", this._onBoundScreenOrientationChangeEvent, false);
-            window.addEventListener("deviceorientation", this._onBoundDeviceOrientationChangeEvent, false);
+            window.addEventListener( "orientationchange", this._onBoundScreenOrientationChangeEvent, false );
+            window.addEventListener( "deviceorientation", this._onBoundDeviceOrientationChangeEvent, false );
         }
 
         this.enabled = true;
@@ -77,20 +77,20 @@ export default class DeviceOrientationControls {
     }
 
     update() {
-        if (this.enabled === false) return;
+        if ( this.enabled === false ) return;
 
         let deviceOrientation = this.deviceOrientation;
 
-        if (deviceOrientation) {
-            let alphaRadians = deviceOrientation.alpha ? MathUtils.degToRad(deviceOrientation.alpha) + this.alphaOffset : 0;
-            let betaRadians = deviceOrientation.beta ? MathUtils.degToRad(deviceOrientation.beta) : 0;
-            let gammaRadians = deviceOrientation.gamma ? MathUtils.degToRad(deviceOrientation.gamma) : 0;
+        if ( deviceOrientation ) {
+            let alphaRadians = deviceOrientation.alpha ? MathUtils.degToRad( deviceOrientation.alpha ) + this.alphaOffset : 0;
+            let betaRadians = deviceOrientation.beta ? MathUtils.degToRad( deviceOrientation.beta ) : 0;
+            let gammaRadians = deviceOrientation.gamma ? MathUtils.degToRad( deviceOrientation.gamma ) : 0;
 
-            let screenOrientationRadians = this.screenOrientation ? MathUtils.degToRad(this.screenOrientation) : 0;
+            let screenOrientationRadians = this.screenOrientation ? MathUtils.degToRad( this.screenOrientation ) : 0;
 
-            this.setObjectQuaternion(this.object.quaternion, alphaRadians, betaRadians, gammaRadians, screenOrientationRadians);
+            this.setObjectQuaternion( this.object.quaternion, alphaRadians, betaRadians, gammaRadians, screenOrientationRadians );
 
-            this.hasValue = this.hasValue || (deviceOrientation.alpha && deviceOrientation.beta && deviceOrientation.gamma);
+            this.hasValue = this.hasValue || ( deviceOrientation.alpha && deviceOrientation.beta && deviceOrientation.gamma );
         }
     }
 
