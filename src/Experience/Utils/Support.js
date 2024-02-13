@@ -18,60 +18,135 @@ export default class Support {
     }
 
     isSupported() {
-        this.properties._isSupportedDevice = !0, this.properties._isSupportedBrowser = (this.properties.isChrome || this.properties.isSafari || this.properties.isEdge || this.properties.isFirefox || this.properties.isOpera) && !this.properties.isIE, this.properties._isSupportedWebGL = this.checkSupportWebGL(), this.properties.isMobile && this.checkSupportMobileOrientation();
-        let e = this.properties._isSupportedDevice && this.properties._isSupportedBrowser && this.properties._isSupportedWebGL;
-        return e === !1 && this.notSupported(), e
+        this.properties.isSupportedDevice = true;
+
+        this.properties.isSupportedBrowser = (
+            this.properties.isChrome ||
+            this.properties.isSafari ||
+            this.properties.isEdge ||
+            this.properties.isFirefox ||
+            this.properties.isOpera
+        ) && !this.properties.isIE;
+
+        this.properties.isSupportedWebGL = this.checkSupportWebGL();
+
+        if ( this.properties.isMobile ) {
+            this.checkSupportMobileOrientation();
+        }
+
+        let isSupported = this.properties.isSupportedDevice &&
+            this.properties.isSupportedBrowser &&
+            this.properties.isSupportedWebGL;
+
+        if ( isSupported === false ) {
+            this.notSupported();
+        }
+
+        return isSupported;
     }
 
+
     notSupported() {
-        if (!this.properties._isSupportedDevice) {
-            this._addNotSupported("device");
+        if ( !this.properties._isSupportedDevice ) {
+            this._addNotSupported( "device" );
             return
         }
-        if (!this.properties._isSupportedBrowser) {
-            this._addNotSupported("browser");
+        if ( !this.properties._isSupportedBrowser ) {
+            this._addNotSupported( "browser" );
             return
         }
-        if (!this.properties._isSupportedWebGL) {
-            this._addNotSupported("webgl");
+        if ( !this.properties._isSupportedWebGL ) {
+            this._addNotSupported( "webgl" );
             return
         }
     }
 
     checkSupportWebGL() {
-        if (!(this.properties.canvas instanceof HTMLCanvasElement)) return !1;
-        if (this.properties.USE_WEBGL2 && window.WebGL2RenderingContext) try {
-            return this.properties.gl = this.properties.canvas.getContext("webgl2", this.properties.webglOpts), this.properties.RENDER_TARGET_FLOAT_TYPE = THREE.HalfFloatType, this.properties.DATA_FLOAT_TYPE = THREE.FloatType, !0
-        } catch (e) {
-            return console.error(e), !1
+        if ( !( this.properties.canvas instanceof HTMLCanvasElement ) ) return false;
+
+        if ( this.properties.USE_WEBGL2 && window.WebGL2RenderingContext ) {
+            try {
+                this.properties.gl = this.properties.canvas.getContext( "webgl2", this.properties.webglOpts );
+                this.properties.RENDER_TARGET_FLOAT_TYPE = THREE.HalfFloatType;
+                this.properties.DATA_FLOAT_TYPE = THREE.FloatType;
+                return true;
+            } catch ( error ) {
+                console.error( error );
+                return false;
+            }
         }
-        if (this.properties.USE_WEBGL2 = !1, window.WebGLRenderingContext) try {
-            let e = this.properties.gl = this.properties.canvas.getContext("webgl", this.properties.webglOpts) || this.properties.canvas.getContext("experimental-webgl", this.properties.webglOpts);
-            if ((e.getExtension("OES_texture_float") || e.getExtension("OES_texture_half_float")) && e.getParameter(e.MAX_VERTEX_TEXTURE_IMAGE_UNITS)) this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.isIOS || e.getExtension("OES_texture_half_float") ? THREE.HalfFloatType : THREE.FloatType, this.properties.DATA_FLOAT_TYPE = THREE.FloatType; else return this.properties.USE_FLOAT_PACKING = !0, this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.DATA_FLOAT_TYPE = THREE.UnsignedByteType, !1;
-            return !0
-        } catch (e) {
-            return console.error(e), !1
+
+        this.properties.USE_WEBGL2 = false;
+
+        if ( window.WebGLRenderingContext ) {
+            try {
+                let glContext = this.properties.gl = this.properties.canvas.getContext( "webgl", this.properties.webglOpts ) ||
+                    this.properties.canvas.getContext( "experimental-webgl", this.properties.webglOpts );
+
+                if ( ( glContext.getExtension( "OES_texture_float" ) || glContext.getExtension( "OES_texture_half_float" ) ) &&
+                    glContext.getParameter( glContext.MAX_VERTEX_TEXTURE_IMAGE_UNITS ) ) {
+                    this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.isIOS || glContext.getExtension( "OES_texture_half_float" ) ?
+                        THREE.HalfFloatType : THREE.FloatType;
+                    this.properties.DATA_FLOAT_TYPE = THREE.FloatType;
+                } else {
+                    this.properties.USE_FLOAT_PACKING = true;
+                    this.properties.RENDER_TARGET_FLOAT_TYPE = this.properties.DATA_FLOAT_TYPE = THREE.UnsignedByteType;
+                    return false;
+                }
+                return true;
+            } catch ( error ) {
+                console.error( error );
+                return false;
+            }
         }
-        return !1
+
+        return false;
     }
 
     checkSupportMobileOrientation() {
-        const e = window.matchMedia("(orientation: portrait)"), t = i => {
-            const n = i.matches ? "portrait" : "landscape";
-            n === "portrait" ? this.properties._isSupportedMobileOrientation = !0 : n === "landscape" && (this.properties._isSupportedMobileOrientation = !1), this.properties._isSupported && !this.properties._isSupportedMobileOrientation ? this._addNotSupported("orientation") : this._removeNotSupported("orientation")
+        const orientationMediaQuery = window.matchMedia( "(orientation: portrait)" );
+
+        const handleOrientationChange = ( mediaQueryListEvent ) => {
+            const currentOrientation = mediaQueryListEvent.matches ? "portrait" : "landscape";
+
+            if ( currentOrientation === "portrait" ) {
+                this.properties.isSupportedMobileOrientation = true;
+            } else if ( currentOrientation === "landscape" ) {
+                this.properties.isSupportedMobileOrientation = false;
+            }
+
+            if ( this.properties.isSupported && !this.properties.isSupportedMobileOrientation ) {
+                this.addNotSupportedIndicator( "orientation" );
+            } else {
+                this.removeNotSupportedIndicator( "orientation" );
+            }
         };
-        window.addEventListener("load", () => {
-            t(e)
-        }), e.addEventListener("change", i => {
-            t(i)
-        })
+
+        window.addEventListener( "load", () => {
+            handleOrientationChange( orientationMediaQuery );
+        } );
+
+        orientationMediaQuery.addEventListener( "change", ( event ) => {
+            handleOrientationChange( event );
+        } );
     }
 
-    _removeNotSupported(e) {
-        this.properties._isSupported && document.documentElement.classList.remove("not-supported"), e && document.documentElement.classList.remove(`not-supported--${e}`)
+    _removeNotSupported( feature ) {
+        if ( this.properties.isSupported ) {
+            document.documentElement.classList.remove( "not-supported" );
+        }
+
+        if ( feature ) {
+            document.documentElement.classList.remove( `not-supported--${ feature }` );
+        }
     }
 
-    _addNotSupported(e) {
-        document.documentElement.classList.add("not-supported"), e && document.documentElement.classList.add(`not-supported--${e}`)
+    _addNotSupported( feature ) {
+        document.documentElement.classList.add( "not-supported" );
+
+        if ( feature ) {
+            document.documentElement.classList.add( `not-supported--${ feature }` );
+        }
     }
+
 }
