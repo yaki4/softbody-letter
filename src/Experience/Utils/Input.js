@@ -65,15 +65,14 @@ export default class Input {
     }
 
     preInit() {
-        const e = document;
-        e.addEventListener( "mousedown", this._onDown.bind( this ) )
-        e.addEventListener( "touchstart", this._getTouchBound( this, this._onDown ) )
-        e.addEventListener( "mousemove", this._onMove.bind( this ) )
-        e.addEventListener( "touchmove", this._getTouchBound( this, this._onMove ) )
-        e.addEventListener( "mouseup", this._onUp.bind( this ) )
-        e.addEventListener( "touchend", this._getTouchBound( this, this._onUp ) )
-        e.addEventListener( "wheel", this._onWheel.bind( this ) )
-        e.addEventListener( "mousewheel", this._onWheel.bind( this ) )
+        document.addEventListener( "mousedown", this._onDown.bind( this ) )
+        document.addEventListener( "touchstart", this._getTouchBound( this, this._onDown ) )
+        document.addEventListener( "mousemove", this._onMove.bind( this ) )
+        document.addEventListener( "touchmove", this._getTouchBound( this, this._onMove ) )
+        document.addEventListener( "mouseup", this._onUp.bind( this ) )
+        document.addEventListener( "touchend", this._getTouchBound( this, this._onUp ) )
+        document.addEventListener( "wheel", this._onWheel.bind( this ) )
+        document.addEventListener( "mousewheel", this._onWheel.bind( this ) )
         this.addEasedInput( "default", 1.35, .5, 1.25 )
         this.dragScrollDynamic = this.addEasedInput( "dragScroll", 2, 1, 1 )
         this.onUped.addOnce( () => {

@@ -6,28 +6,35 @@ export default class Simple1DNoise {
     _r = [];
 
     constructor() {
-        for (let e = 0; e < Simple1DNoise.MAX_VERTICES; ++e) this._r.push(Math.random() - .5)
+        for ( let index = 0; index < Simple1DNoise.MAX_VERTICES; ++index ) {
+            this._r.push( Math.random() - 0.5 );
+        }
     }
 
-    getVal(e) {
-        const t = e * this._scale, i = Math.floor(t), n = t - i, r = n * n * (3 - 2 * n),
-            a = i & Simple1DNoise.MAX_VERTICES_MASK, l = a + 1 & Simple1DNoise.MAX_VERTICES_MASK;
-        return math.mix(this._r[a], this._r[l], r) * this._amplitude
+    getVal( input ) {
+        const scaledInput = input * this._scale;
+        const integerPart = Math.floor( scaledInput );
+        const fractionalPart = scaledInput - integerPart;
+        const smoothedFraction = fractionalPart * fractionalPart * ( 3 - 2 * fractionalPart );
+        const indexA = integerPart & Simple1DNoise.MAX_VERTICES_MASK;
+        const indexB = ( indexA + 1 ) & Simple1DNoise.MAX_VERTICES_MASK;
+        return math.mix( this._r[ indexA ], this._r[ indexB ], smoothedFraction ) * this._amplitude;
     }
+
 
     get amplitude() {
-        return this._amplitude
+        return this._amplitude;
     }
 
-    set amplitude(e) {
-        this._amplitude = e
+    set amplitude(value) {
+        this._amplitude = value;
     }
 
     get scale() {
-        return this._scale
+        return this._scale;
     }
 
-    set scale(e) {
-        this._scale = e
+    set scale(value) {
+        this._scale = value;
     }
 }
