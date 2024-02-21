@@ -57,6 +57,8 @@ export default class Particles {
         }
 
         let dataDist = this.properties.pointsGeometry.attributes.dist.array; // l
+
+
         instancedBufferGeometry.setAttribute( "a_simUv", new THREE.InstancedBufferAttribute( dataSimUv, 2 ) )
         instancedBufferGeometry.setAttribute( "a_dist", new THREE.InstancedBufferAttribute( dataDist, 1 ) )
 

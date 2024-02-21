@@ -20,7 +20,7 @@ export default class CameraControls {
     input = this.experience.world.input
 
 
-    useOrbitControls = false;
+    useOrbitControls = true;
 
     preInit() {
         this.DEFAULT_CAMERA_POSITION = new THREE.Vector3( 0, 0, 3.5 )

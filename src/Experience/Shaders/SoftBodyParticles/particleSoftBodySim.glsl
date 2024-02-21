@@ -9,8 +9,8 @@ uniform vec2 u_tetsTextureSize;
 varying vec2 v_uv;
 
 void main () {
-    vec4 uvX = texture2D(u_tetsUvXTexture, v_uv);;
-    vec4 uvY = texture2D(u_tetsUvYTexture, v_uv);;
+    vec4 uvX = texture2D(u_tetsUvXTexture, v_uv);
+    vec4 uvY = texture2D(u_tetsUvYTexture, v_uv);
     vec4 baryWeights = texture2D(u_baryWeightsTexture, v_uv);
 
     vec3 pos = vec3(0.0);

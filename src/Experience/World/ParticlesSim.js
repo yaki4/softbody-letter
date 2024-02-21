@@ -81,6 +81,7 @@ export default class ParticlesSim {
             this.velocityLifes[ j ] = 0
             this.velocityLifes[ j + 1 ] = 0
             this.velocityLifes[ j + 2 ] = 0
+
             this.velocityLifes[ j + 3 ] = this.properties.pointsGeometry.attributes.dist.array[ i ]
         }
 

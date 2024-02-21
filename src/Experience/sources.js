@@ -39,14 +39,34 @@ export default [
         type: 'texture',
         path: 'textures/LDR_RGB1_0.png'
     },
+    // {
+    //     name: 'smaaSearch',
+    //     type: 'texture',
+    //     path: 'textures/smaa-search.png'
+    // },
+    // {
+    //     name: 'smaaArea',
+    //     type: 'texture',
+    //     path: 'textures/smaa-area.png'
+    // }
     {
-        name: 'smaaSearch',
-        type: 'texture',
-        path: 'textures/smaa-search.png'
+        name: 'cubeTetsModel',
+        type: 'gltfModel',
+        path: 'models/cubeTets.glb'
     },
     {
-        name: 'smaaArea',
-        type: 'texture',
-        path: 'textures/smaa-area.png'
-    }
+        name: 'cubeInnerModel',
+        type: 'gltfModel',
+        path: 'models/cubeInner.glb'
+    },
+    {
+        name: 'suzTetsModel',
+        type: 'gltfModel',
+        path: 'models/suzTets.glb'
+    },
+    {
+        name: 'suzInnerModel',
+        type: 'gltfModel',
+        path: 'models/suzInner.glb'
+    },
 ]

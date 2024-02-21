@@ -74,5 +74,10 @@ void main () {
     v_dist = a_dist;
     v_emission = brightness * emissionMultiplier;
 
+//    if (dist < 0.3) {
+//        pos.x += 0.5;
+//    }
+
+
     gl_Position = projectionMatrix * modelViewMatrix * vec4( pos, 1.0 );
 }

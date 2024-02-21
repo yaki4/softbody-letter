@@ -5,6 +5,7 @@ import vert from '../Shaders/Terrain/vertex.glsl'
 import frag from '../Shaders/Terrain/fragment.glsl'
 
 export default class Terrain {
+    container = new THREE.Object3D;
 
     constructor() {
         this.experience = new Experience()
@@ -28,19 +29,18 @@ export default class Terrain {
 
         this.material = new THREE.ShaderMaterial( {
             uniforms: Object.assign( {
-                    u_texture: new THREE.Uniform( this.texture ),
-                    u_time: new THREE.Uniform( 0 ),
-                    u_resolution: new THREE.Uniform( new THREE.Vector2( this.sizes.width, this.sizes.height ) ),
-                },
-                this.lightField.sharedUniforms,
-                this.blueNoise.sharedUniforms ),
+                u_texture: new THREE.Uniform( this.texture ),
+                u_time: new THREE.Uniform( 0 ),
+                u_resolution: new THREE.Uniform( new THREE.Vector2( this.sizes.width, this.sizes.height ) ),
+            },
+            this.lightField.sharedUniforms,
+            this.blueNoise.sharedUniforms ),
             vertexShader: vert,
             fragmentShader: frag
         } )
 
         this.mesh = new THREE.Mesh( this.geometry, this.material )
-
-        this.scene.add( this.mesh )
+        this.container.add( this.mesh )
     }
 
     resize() {

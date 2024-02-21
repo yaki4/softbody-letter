@@ -23,6 +23,8 @@ import SoftBodyInner from "./SoftBodyInner.js";
 import InnerPart from "./InnerPart.js";
 import Particles from "./Particles.js";
 
+import Letter from "./Letter.js";
+
 export default class World {
     constructor() {
         this.experience = new Experience()
@@ -46,8 +48,10 @@ export default class World {
             this.cameraControls = new CameraControls()
             this.cameraControls.preInit()
             this.fboHelper = new FboHelper()
-            this.blueNoise = new BlueNoise()
 
+            //this.letter = new Letter()
+
+            this.blueNoise = new BlueNoise()
             this.lightField = new AboutHeroLightField()
             this.softBodyTets = new SoftBodyTets()
             this.particlesSim = new ParticlesSim()
@@ -62,14 +66,15 @@ export default class World {
             this.particles.init()
             this.softBody.postInit()
 
-            this.scene.add( this.particles.container )
-            this.scene.add( this.softBody.container )
-            this.scene.add( this.innerPart.container )
-
             this.bg = new Bg()
             this.dust = new Dust()
             this.terrain = new Terrain()
             this.environment = new Environment()
+
+            this.scene.add( this.terrain.container )
+            this.scene.add( this.particles.container )
+            this.scene.add( this.softBody.container )
+            this.scene.add( this.innerPart.container )
 
             // Remove preloader
             this.html.preloader.classList.add( "preloaded" );

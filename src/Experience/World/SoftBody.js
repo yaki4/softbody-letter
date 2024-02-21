@@ -33,7 +33,9 @@ export default class SoftBody {
     }
 
     init() {
-        this.softBodyTets.init(), this.softBodyParticles.init(), this.softBodyInner.init()
+        this.softBodyTets.init()
+        this.softBodyParticles.init()
+        this.softBodyInner.init()
     }
 
     postInit() {
