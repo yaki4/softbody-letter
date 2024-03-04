@@ -128,7 +128,7 @@ export default class SoftBodyInner {
     preInit() {
         this.geometry = this.resources.items.bufferSolid
         //this.geometry = this.resources.items.cubeTetsModel.scene.children[0].geometry
-        //this.geometry = this.resources.items.cubeInnerModel.scene.children[0].geometry
+        this.geometry = this.resources.items.cubeInnerModel.scene.children[0].geometry
         //this.geometry = this.resources.items.suzInnerModel.scene.children[0].geometry
 
     }

@@ -11,7 +11,7 @@ export default class Particles {
     container = new THREE.Object3D;
     particlesMesh;
     particlesGeometry;
-    particleSize = .0125;
+    particleSize = .0225; //.0125
     hasInitialized = false;
 
     constructor() {

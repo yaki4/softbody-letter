@@ -27,6 +27,53 @@ export default class SoftBody {
 
     preInit() {
         this.properties.pointsGeometry = this.resources.items.bufferPoints
+
+        //console.log(this.resources.items.cubeParticlesModel.scene.children)
+
+        // merge 7 geometries into one array
+        let geom_01 = this.resources.items.cubeParticlesModel.scene.children[0].geometry
+        //let geom_01 = this.resources.items.cubeParticlesModel.scene.children[1].geometry
+        let geom_02 = this.resources.items.cubeParticlesModel.scene.children[2].geometry
+        //let geom_03 = this.resources.items.cubeParticlesModel.scene.children[3].geometry
+        let geom_04 = this.resources.items.cubeParticlesModel.scene.children[4].geometry
+        let geom_08 = this.resources.items.cubeParticlesModel.scene.children[5].geometry
+        let geom_09 = this.resources.items.cubeParticlesModel.scene.children[6].geometry
+
+
+
+        let pointsGeometry = new Float32Array(
+            geom_01.attributes.position.array.length +
+            //geom_01.attributes.position.array.length +
+            geom_02.attributes.position.array.length +
+            //geom_03.attributes.position.array.length +
+            geom_04.attributes.position.array.length +
+            geom_08.attributes.position.array.length +
+            geom_09.attributes.position.array.length
+        )
+
+        let pointsDist = new Float32Array(pointsGeometry.length / 3);
+
+        pointsGeometry.set(geom_01.attributes.position.array, 0);
+        //pointsGeometry.set(geom_01.attributes.position.array, geom_01.attributes.position.array.length);
+        pointsGeometry.set(geom_02.attributes.position.array, geom_01.attributes.position.array.length);
+        //pointsGeometry.set(geom_03.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length);
+        pointsGeometry.set(geom_04.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length);
+        pointsGeometry.set(geom_08.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length + geom_04.attributes.position.array.length);
+        pointsGeometry.set(geom_09.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length + geom_04.attributes.position.array.length + geom_08.attributes.position.array.length);
+
+        // array set all to 0
+        pointsDist.fill(0.01);
+        pointsDist.fill(0.2, geom_01.attributes.position.count);
+        pointsDist.fill(0.4, geom_01.attributes.position.count + geom_02.attributes.position.count);
+        pointsDist.fill(0.8, geom_01.attributes.position.count + geom_02.attributes.position.count + geom_04.attributes.position.count);
+        pointsDist.fill(0.9, geom_01.attributes.position.count + geom_02.attributes.position.count + geom_04.attributes.position.count + geom_08.attributes.position.count);
+
+        this.properties.pointsGeometry = new THREE.BufferGeometry()
+        this.properties.pointsGeometry.setAttribute('position', new THREE.BufferAttribute(pointsGeometry, 3))
+        this.properties.pointsGeometry.setAttribute('dist', new THREE.BufferAttribute(pointsDist, 1))
+
+
+
         this.softBodyTets.preInit()
         this.softBodyParticles.preInit()
         this.softBodyInner.preInit()

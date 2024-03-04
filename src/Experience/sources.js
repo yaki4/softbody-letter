@@ -60,13 +60,8 @@ export default [
         path: 'models/cubeInner.glb'
     },
     {
-        name: 'suzTetsModel',
+        name: 'cubeParticlesModel',
         type: 'gltfModel',
-        path: 'models/suzTets.glb'
-    },
-    {
-        name: 'suzInnerModel',
-        type: 'gltfModel',
-        path: 'models/suzInner.glb'
-    },
+        path: 'models/cubeParticles.glb'
+    }
 ]

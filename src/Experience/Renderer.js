@@ -18,7 +18,7 @@ export default class Renderer {
         this.timeline = this.experience.timeline
         this.html = this.experience.html
 
-        this.usePostprocess = false
+        this.usePostprocess = true
 
         this.setInstance()
         this.setPostProcess()
