@@ -197,8 +197,26 @@ export default class Renderer {
     }
 
     update() {
+        if( this.debug ) {
+            this.debugRender()
+        } else {
+            this.productionRender()
+        }
+    }
+
+    productionRender() {
         if( this.usePostprocess ) {
             this.postProcess.composer.render()
+        } else {
+            this.instance.render( this.scene, this.camera.instance )
+        }
+    }
+
+    debugRender() {
+        if( this.usePostprocess ) {
+            this.postProcess.composer.renderer.autoClear = false
+            this.postProcess.composer.render()
+            this.postProcess.composer.renderer.clearDepth()
         } else {
             this.instance.render( this.scene, this.camera.instance )
         }

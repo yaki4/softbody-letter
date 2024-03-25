@@ -3,6 +3,13 @@ import Experience from '../Experience.js'
 
 import sliceBlendFrag from '../Shaders/AboutHeroLightField/sliceBlendFrag.glsl'
 
+
+let spriteTL, spriteTR, spriteBL, spriteBR, spriteC;
+
+let mapC;
+
+let group;
+
 export default class AboutHeroLightField {
     GRID_COUNT = new THREE.Vector3( 64, 64, 32 );
     ORIGIN = new THREE.Vector3( 0, 0, 0 );
@@ -39,8 +46,10 @@ export default class AboutHeroLightField {
         this.resources = this.experience.resources
         this.properties = this.experience.world.properties
         this.fboHelper = this.experience.world.fboHelper
+        this.sizes = this.experience.sizes
 
         this.init()
+        this.debugHelper()
     }
 
     init() {
@@ -93,13 +102,13 @@ export default class AboutHeroLightField {
         this.fboHelper.setColorState( currentColorState )
     }
 
-    renderMesh( delta ) {
+    renderMesh( mesh ) {
         let renderer = this.properties.renderer
         let currentColorState = this.fboHelper.getColorState()
         let currentRenderTarget = renderer.getRenderTarget()
 
         renderer.autoClearColor = false
-        this.fboHelper.renderMesh( delta, this.drawnSliceRenderTarget )
+        this.fboHelper.renderMesh( mesh, this.drawnSliceRenderTarget )
         renderer.setRenderTarget( currentRenderTarget )
         this.fboHelper.setColorState( currentColorState )
     }
@@ -122,4 +131,8 @@ export default class AboutHeroLightField {
         this.fboHelper.setColorState( currentColorState )
     }
 
+    debugHelper() {
+        //this.debug.createDebugTexture( this.currSliceRenderTarget.texture );
+        //this.debug.createDebugTexture( this.drawnSliceRenderTarget.texture );
+    }
 }

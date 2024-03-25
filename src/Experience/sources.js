@@ -63,5 +63,23 @@ export default [
         name: 'cubeParticlesModel',
         type: 'gltfModel',
         path: 'models/cubeParticles.glb'
+    },
+
+
+
+    {
+        name: 'e2InnerModel',
+        type: 'gltfModel',
+        path: 'models/e2Inner.glb'
+    },
+    {
+        name: 'e2SplineModel',
+        type: 'gltfModel',
+        path: 'models/e2Spline.glb'
+    },
+    {
+        name: 'e2ParticlesModel',
+        type: 'gltfModel',
+        path: 'models/e2Particles.glb'
     }
 ]

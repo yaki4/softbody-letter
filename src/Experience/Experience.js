@@ -54,8 +54,8 @@ export default class Experience
         this.timeline = gsap.timeline({
             paused: true,
         });
-        this.debug = new Debug()
         this.sizes = new Sizes()
+        this.debug = new Debug()
         this.time = new Time()
         this.cursor = { x: 0, y: 0 }
         this.scene = new THREE.Scene()
@@ -102,12 +102,15 @@ export default class Experience
 
     update()
     {
-        if ( this.debug.active )
-            this.debug.panel.refresh()
         this.timeline.time(this.time.elapsed);
         this.camera.update(this.time.delta)
         this.world.update(this.time.delta)
         this.renderer.update(this.time.delta)
+
+        if ( this.debug.active ){
+            this.debug.panel.refresh()
+            this.debug.update( this.time.delta )
+        }
     }
 
     setDefaultCode(){

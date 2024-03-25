@@ -133,7 +133,7 @@ export default class World {
         // Resize related components
         this.softBody.resize(renderWidth, renderHeight);
         this.innerPart.resize(renderWidth, renderHeight);
-        this.bg.resize(renderWidth, renderHeight);
+        this.bg?.resize(renderWidth, renderHeight);
         this.dust.resize(renderWidth, renderHeight);
         this.terrain.resize(renderWidth, renderHeight);
 

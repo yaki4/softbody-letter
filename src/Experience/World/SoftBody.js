@@ -28,51 +28,51 @@ export default class SoftBody {
     preInit() {
         this.properties.pointsGeometry = this.resources.items.bufferPoints
 
-        //console.log(this.resources.items.cubeParticlesModel.scene.children)
+        // Создаём пустую буферную геометрию
+        let combinedGeometry = new THREE.BufferGeometry();
 
-        // merge 7 geometries into one array
-        let geom_01 = this.resources.items.cubeParticlesModel.scene.children[0].geometry
-        //let geom_01 = this.resources.items.cubeParticlesModel.scene.children[1].geometry
-        let geom_02 = this.resources.items.cubeParticlesModel.scene.children[2].geometry
-        //let geom_03 = this.resources.items.cubeParticlesModel.scene.children[3].geometry
-        let geom_04 = this.resources.items.cubeParticlesModel.scene.children[4].geometry
-        let geom_08 = this.resources.items.cubeParticlesModel.scene.children[5].geometry
-        let geom_09 = this.resources.items.cubeParticlesModel.scene.children[6].geometry
+        let positions = [];
+        let dist = [];
+
+        // particles layers
+        const meshes = this.resources.items.e2ParticlesModel.scene.children
+
+        // sort by name property
+        meshes.sort((a, b) => a.name - b.name);
+
+        meshes.forEach((mesh, index) => {
+
+            // if (index > 3) {
+            //     //return;
+            // }
+
+            let geometry = mesh.geometry;
+            // Получаем позиции вершин из геометрии
+            let vertices = geometry.attributes.position.array;
+
+            // Добавляем вершины в общий массив
+            positions.push(...vertices);
+
+            // Вычисляем значение атрибута dist для этой геометрии
+            let distValue = (index / 10) + 0.2;
+
+            // Для каждой вершины в геометрии добавляем значение dist в массив dists
+            for (let i = 0; i < vertices.length / 3; i++) { // Делим на 3, потому что каждая вершина представлена 3 числами (x, y, z)
+                dist.push(distValue);
+            }
+        });
+
+        //console.log(dist)
+
+        // positions to float32 array
+        positions = new Float32Array(positions);
+        dist = new Float32Array(dist);
 
 
-
-        let pointsGeometry = new Float32Array(
-            geom_01.attributes.position.array.length +
-            //geom_01.attributes.position.array.length +
-            geom_02.attributes.position.array.length +
-            //geom_03.attributes.position.array.length +
-            geom_04.attributes.position.array.length +
-            geom_08.attributes.position.array.length +
-            geom_09.attributes.position.array.length
-        )
-
-        let pointsDist = new Float32Array(pointsGeometry.length / 3);
-
-        pointsGeometry.set(geom_01.attributes.position.array, 0);
-        //pointsGeometry.set(geom_01.attributes.position.array, geom_01.attributes.position.array.length);
-        pointsGeometry.set(geom_02.attributes.position.array, geom_01.attributes.position.array.length);
-        //pointsGeometry.set(geom_03.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length);
-        pointsGeometry.set(geom_04.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length);
-        pointsGeometry.set(geom_08.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length + geom_04.attributes.position.array.length);
-        pointsGeometry.set(geom_09.attributes.position.array, geom_01.attributes.position.array.length + geom_02.attributes.position.array.length + geom_04.attributes.position.array.length + geom_08.attributes.position.array.length);
-
-        // array set all to 0
-        pointsDist.fill(0.01);
-        pointsDist.fill(0.2, geom_01.attributes.position.count);
-        pointsDist.fill(0.4, geom_01.attributes.position.count + geom_02.attributes.position.count);
-        pointsDist.fill(0.8, geom_01.attributes.position.count + geom_02.attributes.position.count + geom_04.attributes.position.count);
-        pointsDist.fill(0.9, geom_01.attributes.position.count + geom_02.attributes.position.count + geom_04.attributes.position.count + geom_08.attributes.position.count);
 
         this.properties.pointsGeometry = new THREE.BufferGeometry()
-        this.properties.pointsGeometry.setAttribute('position', new THREE.BufferAttribute(pointsGeometry, 3))
-        this.properties.pointsGeometry.setAttribute('dist', new THREE.BufferAttribute(pointsDist, 1))
-
-
+        this.properties.pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+        this.properties.pointsGeometry.setAttribute('dist', new THREE.BufferAttribute(dist, 1))
 
         this.softBodyTets.preInit()
         this.softBodyParticles.preInit()

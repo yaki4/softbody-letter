@@ -26,7 +26,7 @@ void main () {
     float brightness = 1.;
     if (dist > 0.75) {
         brightness = max(0., life - 1.);
-    } else if (dist > 0.15) { // 0.55
+    } else if (dist > 0.55) { // 0.55
         brightness = clamp(1. - life, 0., 1.);
     }
     brightness *= pow(scale, 0.75);

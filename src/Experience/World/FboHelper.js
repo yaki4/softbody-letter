@@ -22,9 +22,6 @@ export default class FboHelper {
     copyMaterial;
     uvCopyMaterial;
     clearMaterial;
-    _debugScene;
-    _debugMesh;
-    _debugMaterial;
 
     constructor() {
         this.experience = new Experience()
@@ -117,25 +114,6 @@ export default class FboHelper {
             blending: THREE.NoBlending
         } );
 
-        const planeGeometry = new THREE.PlaneGeometry( 1, 1 );
-        planeGeometry.translate( .5, -.5, 0 )
-
-        this._debugMaterial = new THREE.RawShaderMaterial( {
-            uniforms: {
-                u_texture: { value: null },
-                u_transform: { value: new THREE.Vector4( 0, 0, 1, 1 ) }
-            },
-            vertexShader: this.precisionPrefix + debugVert,
-            fragmentShader: this.precisionPrefix + blitFrag,
-            depthTest: false,
-            depthWrite: false,
-            blending: THREE.NoBlending
-        } )
-
-        this._debugMesh = new THREE.Mesh( planeGeometry, this._debugMaterial )
-        this._debugScene = new THREE.Scene
-        this._debugScene.frustumCulled = false
-        this._debugScene.add( this._debugMesh )
     }
 
     copy( texture, renderTarget ) {
@@ -183,28 +161,6 @@ export default class FboHelper {
             this._scene.remove( mesh );
             this._tri.visible = true;
         }
-    }
-
-    debugTo( texture, t, i, n, r ) {
-        if( !( this.renderer && this._debugMaterial && this._debugScene && this._camera ) ) return;
-
-        t = t || texture.width || texture.image.width
-        i = i || texture.height || texture.image.height
-        n = n || 0
-        r = r || 0
-
-        const a = this.renderer.getSize( new THREE.Vector2 );
-        n = n / a.width * 2 - 1
-        r = 1 - r / a.height * 2
-        t = t / a.width * 2
-        i = i / a.height * 2
-        this._debugMaterial.uniforms.u_texture.value = texture
-        this._debugMaterial.uniforms.u_transform.value.set( n, r, t, i )
-
-        this.renderer.autoClearColor = false
-        this.renderer.setRenderTarget( null )
-        this.renderer.render( this._debugScene, this._camera )
-        this.setColorState( this.getColorState() )
     }
 
     parseDefines( values ) {

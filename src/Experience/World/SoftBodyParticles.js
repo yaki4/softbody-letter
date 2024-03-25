@@ -201,8 +201,8 @@ export default class SoftBodyParticles {
         this.dist = new Float32Array( this.properties.pointsGeometry.attributes.position.array.length / 3 );
 
         this.computeSkinningInfo( this.properties.pointsGeometry.attributes.position.array );
-        this.properties.pointsGeometry.deleteAttribute( 'bary' )
-        this.properties.pointsGeometry.deleteAttribute( 'tet' )
+        // this.properties.pointsGeometry.deleteAttribute( 'bary' )
+        // this.properties.pointsGeometry.deleteAttribute( 'tet' )
         this.properties.pointsGeometry.setAttribute( 'bary', new THREE.BufferAttribute( this.bary, 3 ) )
         this.properties.pointsGeometry.setAttribute( 'tet', new THREE.BufferAttribute( this.tet, 1 ) )
 

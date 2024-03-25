@@ -128,8 +128,10 @@ export default class SoftBodyInner {
     preInit() {
         this.geometry = this.resources.items.bufferSolid
         //this.geometry = this.resources.items.cubeTetsModel.scene.children[0].geometry
-        this.geometry = this.resources.items.cubeInnerModel.scene.children[0].geometry
+        //this.geometry = this.resources.items.cubeInnerModel.scene.children[0].geometry
         //this.geometry = this.resources.items.suzInnerModel.scene.children[0].geometry
+
+        this.geometry = this.resources.items.e2InnerModel.scene.children[0].geometry
 
     }
 
@@ -138,7 +140,7 @@ export default class SoftBodyInner {
         this.computeVisualData()
         // this.tetIndices = this.geometry.attributes.tet.array
         // this.baryWeights = this.geometry.attributes.bary.array
-
+        //
         this.tetIndices = this.tet
         this.baryWeights = this.bary
 

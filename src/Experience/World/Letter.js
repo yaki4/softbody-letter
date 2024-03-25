@@ -56,73 +56,10 @@ export default class Letter {
         this.scene.add( this.light );
 
 
-        this.defaultPosition = this.resources.items.bufferPoints.attributes.position.array.slice();
-        this.positions = this.resources.items.bufferPoints.attributes.position.array;
-        this.innerPositions = this.geometryInner.attributes.position.array;
+        // this.defaultPosition = this.resources.items.bufferPoints.attributes.position.array.slice();
+        // this.positions = this.resources.items.bufferPoints.attributes.position.array;
+        // this.innerPositions = this.geometryInner.attributes.position.array;
         //this.innerPositions = this.geometrySplines.attributes.position.array;
-
-        //sort array
-        //this.resources.items.bufferPoints.attributes.dist.array.sort((a, b) => a - b);
-
-        //console.log(this.resources.items.bufferPoints.attributes.dist.array)
-
-
-        //this.defaultPoint = new THREE.Vector3(this.defaultPosition[0], this.defaultPosition[1], this.defaultPosition[2]);
-        //this.resources.items.bufferPoints.translate(0, 0, 0.0)
-        //this.point = new THREE.Vector3(this.positions[0], this.positions[1], this.positions[2]);
-
-        //
-        // let minDist = new Float32Array( this.defaultPosition.length / 3 );
-        //
-        // let point, pointInner;
-        //
-        // for ( let i = 0; i < minDist.length; ++i ) {
-        //     point = new THREE.Vector3(
-        //         this.defaultPosition[ i * 3 ],
-        //         this.defaultPosition[ i * 3 + 1 ],
-        //         this.defaultPosition[ i * 3 + 2]
-        //     )
-        //
-        //     for ( let j = 0; j < this.innerPositions.length / 3; ++j ) {
-        //         pointInner = new THREE.Vector3(
-        //             this.innerPositions[ j * 3 ],
-        //             this.innerPositions[ j * 3 + 1 ],
-        //             this.innerPositions[ j * 3 + 2]
-        //         )
-        //
-        //         if ( j === 0 ) {
-        //             minDist[ i ] = point.distanceTo(pointInner);
-        //             minDist[ i ] = map_range(minDist[ i ], 0.3, 0.1, 0, 1)
-        //         } else {
-        //             minDist[ i ] = Math.min(point.distanceTo(pointInner))
-        //             minDist[ i ] = map_range(minDist[ i ], 0.3, 0.1, 0, 1)
-        //         }
-        //     }
-        //
-        //
-        //     //minDist[ i ] = point.distanceTo(pointScale);
-        //     //minDist[ i ] = point.normalize().distanceTo(pointScale.normalize());
-        // }
-
-
-        //console.log('minDist', minDist.sort((a, b) => a - b))
-        //console.log('minDist', minDist)
-        //this.resources.items.bufferPoints.deleteAttribute('dist')
-        //this.resources.items.bufferPoints.setAttribute('dist', new THREE.BufferAttribute(minDist, 1))
-
-
-        //
-        // console.log('defaultPoint', this.defaultPoint)
-        // console.log('point', this.point)
-        //
-        // console.log('distance', this.defaultPoint.distanceTo(this.point))
-
-
-        // let geometry = new THREE.BufferGeometry().setFromPoints(convexHull.vertices);
-        // let material = new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true });
-        // let mesh = new THREE.Mesh(geometry, material);
-        // this.scene.add(mesh);
-
 
 
         this.points = new THREE.Points( this.geometry, new THREE.PointsMaterial( {
@@ -130,9 +67,7 @@ export default class Letter {
             size: 0.005
         } ));
         this.scene.add( this.points );
-        //
-        // this.inner = new THREE.Mesh( this.geometryInner, this.material );
-        // this.scene.add( this.inner );
+
     }
 
     animateTextPosition() {
