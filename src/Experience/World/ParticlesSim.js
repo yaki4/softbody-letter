@@ -55,7 +55,7 @@ export default class ParticlesSim {
         let particleCount
 
         if ( this.properties.isMobile ) {
-            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 12
+            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
         } else {
             particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
         }

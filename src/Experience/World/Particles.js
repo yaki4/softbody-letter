@@ -71,7 +71,7 @@ export default class Particles {
                 u_color: { value: new THREE.Color( this.properties.heroColorHex ) }
             }, this.lightField.sharedUniforms ),
             vertexShader: vert,
-            fragmentShader: frag
+            fragmentShader: frag,
         } ) )
 
         this.particlesMesh.renderOrder = 1
