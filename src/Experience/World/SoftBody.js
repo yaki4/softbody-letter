@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
+import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 
 export default class SoftBody {
     container = new THREE.Object3D;
@@ -26,53 +27,64 @@ export default class SoftBody {
     }
 
     preInit() {
-        this.properties.pointsGeometry = this.resources.items.bufferPoints
+        this.properties.pointsGeometry = this.resources.items.e2ParticlesModel.scene.children[0].geometry
 
-        // Создаём пустую буферную геометрию
-        let combinedGeometry = new THREE.BufferGeometry();
-
-        let positions = [];
-        let dist = [];
-
-        // particles layers
-        const meshes = this.resources.items.e2ParticlesModel.scene.children
-
-        // sort by name property
-        meshes.sort((a, b) => a.name - b.name);
-
-        meshes.forEach((mesh, index) => {
-
-            // if (index > 3) {
-            //     //return;
-            // }
-
-            let geometry = mesh.geometry;
-            // Получаем позиции вершин из геометрии
-            let vertices = geometry.attributes.position.array;
-
-            // Добавляем вершины в общий массив
-            positions.push(...vertices);
-
-            // Вычисляем значение атрибута dist для этой геометрии
-            let distValue = (index / 10) + 0.2;
-
-            // Для каждой вершины в геометрии добавляем значение dist в массив dists
-            for (let i = 0; i < vertices.length / 3; i++) { // Делим на 3, потому что каждая вершина представлена 3 числами (x, y, z)
-                dist.push(distValue);
-            }
-        });
-
-        //console.log(dist)
-
-        // positions to float32 array
-        positions = new Float32Array(positions);
-        dist = new Float32Array(dist);
-
-
-
-        this.properties.pointsGeometry = new THREE.BufferGeometry()
-        this.properties.pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
-        this.properties.pointsGeometry.setAttribute('dist', new THREE.BufferAttribute(dist, 1))
+        // // Создаём пустую буферную геометрию
+        // let combinedGeometry = new THREE.BufferGeometry();
+        //
+        // let positions = [];
+        // let dist = [];
+        //
+        // // particles layers
+        // const meshes = this.resources.items.e2ParticlesModel.scene.children
+        //
+        // // sort by name property
+        // meshes.sort((a, b) => a.name - b.name);
+        //
+        // meshes.forEach((mesh, index) => {
+        //
+        //     // if (index > 3) {
+        //     //     //return;
+        //     // }
+        //
+        //     let geometry = mesh.geometry;
+        //     // Получаем позиции вершин из геометрии
+        //     let vertices = geometry.attributes.position.array;
+        //
+        //     // Добавляем вершины в общий массив
+        //     positions.push(...vertices);
+        //
+        //     // Вычисляем значение атрибута dist для этой геометрии
+        //     let distValue = (index / 10) + 0.2;
+        //
+        //     // Для каждой вершины в геометрии добавляем значение dist в массив dists
+        //     for (let i = 0; i < vertices.length / 3; i++) { // Делим на 3, потому что каждая вершина представлена 3 числами (x, y, z)
+        //         dist.push(distValue);
+        //     }
+        // });
+        //
+        // //console.log(dist)
+        //
+        // // positions to float32 array
+        // positions = new Float32Array(positions);
+        // dist = new Float32Array(dist);
+        //
+        //
+        //
+        // this.properties.pointsGeometry = new THREE.BufferGeometry()
+        // this.properties.pointsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+        // this.properties.pointsGeometry.setAttribute('dist', new THREE.BufferAttribute(dist, 1))
+        //
+        //
+        // this.exportedMesh = new THREE.Mesh( this.properties.pointsGeometry, new THREE.MeshBasicMaterial(
+        //     {
+        //         color: 0x00ff00,
+        //     } ) );
+        //
+        // let exporter = new GLTFExporter();
+        // exporter.parse( this.exportedMesh, function ( gltf ) {
+        //     console.log( gltf )
+        // } );
 
         this.softBodyTets.preInit()
         this.softBodyParticles.preInit()

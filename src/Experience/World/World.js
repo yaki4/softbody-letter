@@ -66,7 +66,7 @@ export default class World {
             this.particles.init()
             this.softBody.postInit()
 
-            this.bg = new Bg()
+            //this.bg = new Bg()
             this.dust = new Dust()
             this.terrain = new Terrain()
             this.environment = new Environment()

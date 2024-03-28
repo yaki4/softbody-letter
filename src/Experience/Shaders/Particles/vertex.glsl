@@ -61,9 +61,10 @@ void main () {
         brightness = clamp(1. - life, 0., 1.);
     }
 
-    vec3 emission = mix(vec3(0.44,0.322,0.816), vec3(0., 1., 1.), max(emissionMultiplier - 1., 1. - sqrt(dist * dist))) * emissionMultiplier;
+    vec3 emission = mix(vec3(0.14,5.822,3.816), vec3(1., 0.1, .0), max(emissionMultiplier - 1., 1. - sqrt(dist * dist))) * emissionMultiplier;
+    emission = vec3(2.1,0.322,0.116);
 
-    vec3 albedo = mix(vec3(0.44,0.322,0.816) * 0.25, emission, brightness) * emissionMultiplier;
+    vec3 albedo = mix(vec3(0.44,0.322,1.816) * 0.25, emission, brightness * 2.) * emissionMultiplier;
     vec3 color = albedo * linearStep(-1.0, 1.0, NdL) * attenuation * ao * contactShadow;
     color += linearStep(0., 1.0, RdL) * 1.35 * attenuation * contactShadow;
     color += max(0., indirectDiffuse.x * 2. - indirectDiffuse.w) * emission * ao * (dist > 0.75 ? 1. : 0.);

@@ -13,7 +13,7 @@ let group;
 export default class AboutHeroLightField {
     GRID_COUNT = new THREE.Vector3( 64, 64, 32 );
     ORIGIN = new THREE.Vector3( 0, 0, 0 );
-    VOLUME_SIZE = new THREE.Vector3( 2, 0, 0 );
+    VOLUME_SIZE = new THREE.Vector3( 3, 0, 0 );
     container = new THREE.Object3D;
     prevSliceRenderTarget = null;
     currSliceRenderTarget = null;

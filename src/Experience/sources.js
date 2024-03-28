@@ -5,26 +5,6 @@ export default [
         path: 'geometry/TERRAIN.buf'
     },
     {
-        name: 'bufferPoints',
-        type: 'bufferGeometry',
-        path: 'geometry/POINTS.buf'
-    },
-    {
-        name: 'bufferSplines',
-        type: 'bufferGeometry',
-        path: 'geometry/SPLINES.buf'
-    },
-    {
-        name: 'bufferTets',
-        type: 'bufferGeometry',
-        path: 'geometry/TETS.buf'
-    },
-    {
-        name: 'bufferSolid',
-        type: 'bufferGeometry',
-        path: 'geometry/SOLID.buf'
-    },
-    {
         name: 'bufferParticlesLD',
         type: 'bufferGeometry',
         path: 'geometry/PARTICLE_LD.buf'
@@ -49,23 +29,6 @@ export default [
     //     type: 'texture',
     //     path: 'textures/smaa-area.png'
     // }
-    {
-        name: 'cubeTetsModel',
-        type: 'gltfModel',
-        path: 'models/cubeTets.glb'
-    },
-    {
-        name: 'cubeInnerModel',
-        type: 'gltfModel',
-        path: 'models/cubeInner.glb'
-    },
-    {
-        name: 'cubeParticlesModel',
-        type: 'gltfModel',
-        path: 'models/cubeParticles.glb'
-    },
-
-
 
     {
         name: 'e2InnerModel',
@@ -73,13 +36,18 @@ export default [
         path: 'models/e2Inner.glb'
     },
     {
-        name: 'e2SplineModel',
+        name: 'e2TetsModel',
         type: 'gltfModel',
-        path: 'models/e2Spline.glb'
+        path: 'models/e2Tets.gltf'
     },
+    // {
+    //     name: 'e2SplineModel',
+    //     type: 'gltfModel',
+    //     path: 'models/e2Spline.glb'
+    // },
     {
         name: 'e2ParticlesModel',
         type: 'gltfModel',
-        path: 'models/e2Particles.glb'
+        path: 'models/e2Particles.gltf'
     }
 ]
