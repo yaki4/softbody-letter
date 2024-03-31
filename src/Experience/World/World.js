@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import Experience from '../Experience.js'
 import Environment from './Environment.js'
 
-import MathUtils from '../utils/MathUtils.js'
+import MathUtils from '../Utils/MathUtils.js'
 import Properties from "./Properties.js";
 import BlueNoise from "./BlueNoise.js";
 import FboHelper from "./FboHelper.js";
