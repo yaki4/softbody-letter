@@ -1,12 +1,8 @@
-# git ftp init -u "${{ vars.PRODUCTION_FTP_USERNAME }}" -p "${{ secrets.PRODUCTION_FTP_PASSWORD }}" "${{ vars.PRODUCTION_FTP_HOST }}"
-# git ftp push --force -b main --user "${{ vars.PRODUCTION_FTP_USERNAME }}" --passwd "${{ secrets.PRODUCTION_FTP_PASSWORD }}" "${{ vars.PRODUCTION_FTP_HOST }}"
-# git ftp push -vv --auto-init --insecure --changed-only -f -b main --user "${{ vars.PRODUCTION_FTP_USERNAME }}" --passwd "${{ secrets.PRODUCTION_FTP_PASSWORD }}" "${{ vars.PRODUCTION_FTP_HOST }}"
-
 name: FTP Deploy Source Code
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "main" ]
 
 jobs:
   main:
