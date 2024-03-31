@@ -60,8 +60,8 @@ export default class Debug {
     }
 
     update( deltaTime ) {
-        if( this.debugTexture ) {
-            this.experience?.renderer.instance.render( this.sceneOrtho, this.cameraOrtho );
+        if( this.debugTexture && this.experience.renderer) {
+            this.experience.renderer.instance.render( this.sceneOrtho, this.cameraOrtho );
         }
     }
 }

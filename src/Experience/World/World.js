@@ -22,6 +22,12 @@ import ParticlesSim from "./ParticlesSim.js";
 import SoftBodyInner from "./SoftBodyInner.js";
 import InnerPart from "./InnerPart.js";
 import Particles from "./Particles.js";
+import GenerativeTerrain from "./GenerativeTerrain.js";
+import State from "../State/State.js";
+import Noises from "./Noises.js";
+import Sky from "./Sky.js";
+import Terrains from "./terrain/Terrains.js";
+import Grass from "./terrain/Grass.js";
 
 import Letter from "./Letter.js";
 
@@ -58,23 +64,30 @@ export default class World {
             this.softBodyParticles = new SoftBodyParticles()
             this.softBodyInner = new SoftBodyInner()
             this.softBody = new SoftBody()
-            this.innerPart = new InnerPart()
+            //this.innerPart = new InnerPart()
             this.particles = new Particles()
 
             this.softBody.init()
-            this.innerPart.init()
+            this.innerPart?.init()
             this.particles.init()
             this.softBody.postInit()
 
             //this.bg = new Bg()
+            //this.dust = new Dust()
+            //this.terrain = new Terrain()
+            //this.generativeTerrain = new GenerativeTerrain()
+            this.state = new State()
+            this.noises = new Noises()
+            this.sky = new Sky()
+            this.terrains = new Terrains()
+            this.grass = new Grass()
             this.dust = new Dust()
-            this.terrain = new Terrain()
             this.environment = new Environment()
 
-            this.scene.add( this.terrain.container )
+            //this.scene.add( this.terrain.container )
             this.scene.add( this.particles.container )
             this.scene.add( this.softBody.container )
-            this.scene.add( this.innerPart.container )
+            //this.scene.add( this.innerPart.container )
 
             // Remove preloader
             this.html.preloader.classList.add( "preloaded" );
@@ -134,8 +147,8 @@ export default class World {
         this.softBody.resize(renderWidth, renderHeight);
         this.innerPart.resize(renderWidth, renderHeight);
         this.bg?.resize(renderWidth, renderHeight);
-        this.dust.resize(renderWidth, renderHeight);
-        this.terrain.resize(renderWidth, renderHeight);
+        this.dust?.resize(renderWidth, renderHeight);
+        this.terrain?.resize(renderWidth, renderHeight);
 
         // Adjust scale factor for non-square aspect ratios
         this.properties.scaleFactor = this.properties.width < this.properties.height ? this.properties.width / this.properties.height : 1;
@@ -171,6 +184,11 @@ export default class World {
 
         this.lightField && this.lightField.postUpdate( delta )
         this.terrain && this.terrain.update( delta )
+        //this.generativeTerrain && this.generativeTerrain.update( delta )
+        this.state && this.state.update( delta )
+        this.sky && this.sky.update( delta )
+        this.terrains && this.terrains.update( delta )
+        this.grass && this.grass.update( delta )
 
 
         this.input && this.input.postUpdate( delta )

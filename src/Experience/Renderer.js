@@ -18,7 +18,7 @@ export default class Renderer {
         this.timeline = this.experience.timeline
         this.html = this.experience.html
 
-        this.usePostprocess = true
+        this.usePostprocess = false
 
         this.setInstance()
         this.setPostProcess()
@@ -26,7 +26,8 @@ export default class Renderer {
     }
 
     setInstance() {
-        this.clearColor = '#010101'
+        //this.clearColor = '#010101'
+        this.clearColor = '#222222'
 
         this.instance = new THREE.WebGLRenderer( {
             canvas: this.canvas,
@@ -38,6 +39,9 @@ export default class Renderer {
             //useLegacyLights: false,
             //physicallyCorrectLights: true,
         } )
+
+        this.instance.sortObjects = false
+        this.instance.setClearColor( this.clearColor, 1 )
 
         this.instance.outputColorSpace = THREE.LinearSRGBColorSpace
         //this.instance.encoding = THREE.LinearEncoding
@@ -63,7 +67,7 @@ export default class Renderer {
             new THREE.Vector2( this.sizes.width, this.sizes.height ),
             0.6,
             1.0,
-            0.362
+            0.962
         )
         this.postProcess.unrealBloomPass.enabled = true
 
@@ -218,7 +222,10 @@ export default class Renderer {
             this.postProcess.composer.render()
             this.postProcess.composer.renderer.clearDepth()
         } else {
+            this.instance.autoClear = false
             this.instance.render( this.scene, this.camera.instance )
+            this.instance.clearDepth()
+
         }
     }
 

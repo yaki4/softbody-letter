@@ -4,7 +4,7 @@ import { GLTFExporter } from 'three/examples/jsm/exporters/GLTFExporter.js'
 
 export default class SoftBody {
     container = new THREE.Object3D;
-    numSubsteps = 5;
+    numSubsteps = 3;
     interactiveRatio = 1;
     interactivePattern = 0;
     prevStartTime = 0;

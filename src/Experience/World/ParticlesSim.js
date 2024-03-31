@@ -55,7 +55,7 @@ export default class ParticlesSim {
         let particleCount
 
         if ( this.properties.isMobile ) {
-            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
+            particleCount = this.properties.pointsGeometry.attributes.position.array.length / 12
         } else {
             particleCount = this.properties.pointsGeometry.attributes.position.array.length / 3
         }
@@ -108,7 +108,8 @@ export default class ParticlesSim {
                 u_deltaTime: this.sharedUniforms.u_deltaTime,
                 u_softBodyTexture: this.sharedUniforms.u_softBodyTexture,
                 u_positionLifeTexture: this.sharedUniforms.u_currPositionLifeTexture,
-                u_velocityDistTexture: this.sharedUniforms.u_currVelocityDistTexture
+                u_velocityDistTexture: this.sharedUniforms.u_currVelocityDistTexture,
+                u_isMobile: { value: this.properties.isMobile }
             },
             vertexShader: this.fboHelper.vertexShader,
             fragmentShader: this.fboHelper.precisionPrefix + particlesPositionSim

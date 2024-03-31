@@ -3,6 +3,7 @@ uniform float u_deltaTime;
 uniform sampler2D u_softBodyTexture;
 uniform sampler2D u_positionLifeTexture;
 uniform sampler2D u_velocityDistTexture;
+uniform bool u_isMobile;
 
 varying vec2 v_uv;
 
@@ -23,6 +24,9 @@ void main () {
     float life = positionLife.w;
 
     bool isInner = distFromCenter < 0.5;
+    if( u_isMobile ) {
+        isInner = distFromCenter < 0.1;
+    }
 
     // inner particles are always alive
     if (!isInner) {

@@ -49,5 +49,22 @@ export default [
         name: 'e2ParticlesModel',
         type: 'gltfModel',
         path: 'models/e2Particles.gltf'
-    }
+    },
+
+    // Generative Terrain
+    {
+        name: 'whiteSquareTexture',
+        type: 'texture',
+        path: 'textures/terrain/whitesquare.png'
+    },
+    {
+        name: 'terrainTexture',
+        type: 'texture',
+        path: 'textures/terrain/terrain.png'
+    },
+    {
+        name: 'gridTexture',
+        type: 'texture',
+        path: 'textures/terrain/grid.png'
+    },
 ]
