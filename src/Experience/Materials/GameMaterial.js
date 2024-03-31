@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import vertexShader from '../shaders/Grass/grass-lighting-model-vsh.glsl';
-import fragmentShader from '../shaders/Grass/grass-lighting-model-fsh.glsl';
+import vertexShader from '../Shaders/Grass/grass-lighting-model-vsh.glsl';
+import fragmentShader from '../Shaders/Grass/grass-lighting-model-fsh.glsl';
 
 class ShaderManager {
     static shaderCode = {};
