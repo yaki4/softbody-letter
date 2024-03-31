@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import Experience from '../Experience.js'
-import Hash from '../utils/Hash.js'
+import Hash from '../Utils/Hash.js'
 
 function vecSetZero( a, anr ) {
     anr *= 3;
